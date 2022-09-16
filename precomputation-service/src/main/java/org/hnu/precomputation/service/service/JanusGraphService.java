@@ -11,6 +11,7 @@ import org.hnu.precomputation.common.model.dataset.JanusSchema;
 import org.janusgraph.core.*;
 import org.janusgraph.core.schema.*;
 import org.janusgraph.diskstorage.BackendException;
+import org.janusgraph.graphdb.database.management.ManagementSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ import static com.datastax.dse.driver.api.core.graph.DseGraph.g;
 @Service
 public class JanusGraphService  {
     private final static Logger logger = LoggerFactory.getLogger("JanusGraphService");
-    String path="D:\\application\\janusgraph\\ZJproject-dev\\precomputation-service\\src\\main\\resources\\janusgraph-cql.properties";
+    String path="precomputation-service/src/main/resources/janusgraph-cql.properties";
     JanusGraph graph;
     String edgeLabel="E_Label";
     String vertexLabel="V_Label";
@@ -37,15 +38,20 @@ public class JanusGraphService  {
     String egdeProperty="E_property";
     List<Object> edgeIdlist=new ArrayList<>();
     JanusGraphManagement mgmt;
+    GraphTraversalSource g;
+
+
 
     @PostConstruct
     private void init() throws Exception {
 
         JanusGraph graph = JanusGraphFactory.open(path);
         this.graph=graph;
+        this.mgmt=graph.openManagement();
+        this.g = graph.traversal();
         //初始化schema
         if(!graph.containsPropertyKey(vertexProperty)) {
-            mgmt = graph.openManagement();
+            JanusGraphManagement  mgmt = graph.openManagement();
             EdgeLabel EL = mgmt.makeEdgeLabel(edgeLabel).make();
             VertexLabel VL = mgmt.makeVertexLabel(vertexLabel).make();
             PropertyKey VP = mgmt.makePropertyKey(vertexProperty).dataType(Integer.class).make();
@@ -57,17 +63,17 @@ public class JanusGraphService  {
             mgmt.commit();
             mgmt = graph.openManagement();
             mgmt.updateIndex(mgmt.getGraphIndex("searchVertex"), SchemaAction.REINDEX).get();
-
            */
             mgmt.commit();
         }
-        this.mgmt = graph.openManagement();
+
         logger.info("JanusGraph init.");
 
     }
 
     public String createSchema(String vertexProperty,String edgeProperty) throws Exception {
         //创建schema
+         mgmt = graph.openManagement();
         PropertyKey v_property = mgmt.makePropertyKey(vertexProperty).dataType(Integer.class).make();
         PropertyKey e_property = mgmt.makePropertyKey(edgeProperty).dataType(String.class).make();
         EdgeLabel e_label = mgmt.getOrCreateEdgeLabel("E_Label");
@@ -79,14 +85,18 @@ public class JanusGraphService  {
         mgmt.commit();
         mgmt = graph.openManagement();
         mgmt.updateIndex(mgmt.getGraphIndex(vertexProperty), SchemaAction.REINDEX).get();
+        String s = mgmt.printSchema();
         mgmt.commit();
 
 
-        return mgmt.printSchema();
+        return s;
 
     }
     public String printSchema(){
-        return mgmt.printSchema();
+        JanusGraphManagement mgmt = graph.openManagement();
+        String s=mgmt.printSchema();
+        mgmt.commit();
+        return s;
     }
     //顶点增删查改
     //1,顶点增加
@@ -171,19 +181,21 @@ public class JanusGraphService  {
     //以下功能适用于批量处理
     //1,数据批量增加
     public String putFile(MultipartFile file, String vertexProperty,String edgeProperty) throws Exception {
-        GraphTraversalSource g = graph.traversal();
+        g = graph.traversal();
         //为新的property构建索引
         PropertyKey V_propertyKey = mgmt.makePropertyKey(vertexProperty).dataType(Integer.class).make();
         PropertyKey E_propertyKey = mgmt.makePropertyKey(edgeProperty).dataType(Integer.class).make();
         mgmt.buildIndex(vertexProperty,Vertex.class).addKey(V_propertyKey).buildCompositeIndex();
-        mgmt.buildIndex(edgeProperty,Edge.class).addKey(E_propertyKey).buildCompositeIndex();
-        // ManagementSystem.awaitGraphIndexStatus(graph, "searchVertex").call();
-        mgmt.commit();
+       mgmt.buildIndex(edgeProperty,Edge.class).addKey(E_propertyKey).buildCompositeIndex();
+        ManagementSystem.awaitGraphIndexStatus(graph, "searchVertex").call();
+      mgmt.commit();
         mgmt = graph.openManagement();
-        mgmt.updateIndex(mgmt.getGraphIndex(vertexProperty), SchemaAction.REINDEX).get();
+       mgmt.updateIndex(mgmt.getGraphIndex(vertexProperty), SchemaAction.REINDEX).get();
         mgmt.updateIndex(mgmt.getGraphIndex(edgeProperty), SchemaAction.REINDEX).get();
         mgmt.commit();
+        mgmt = graph.openManagement();
         //导入数据
+        System.out.println("2x222");
         List<Integer> list = new ArrayList<>();
         InputStream fis = file.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
@@ -198,19 +210,19 @@ public class JanusGraphService  {
             if (list.contains(a)) {
                 vertexA = g.V().has(vertexProperty, a).next();
             } else {
-                vertexA = graph.addVertex(vertexLabel).property(vertexProperty, a).element();
+                vertexA = g.addV(vertexLabel).property(vertexProperty, a).next();
+
                 list.add(a);
             }
             if (list.contains(b)) {
                 vertexB = g.V().has(vertexProperty,b).next();
             } else {
-                vertexB = graph.addVertex(vertexLabel).property(vertexProperty, b).element();
+                vertexB = g.addV(vertexLabel).property(vertexProperty, b).next();
                 list.add(b);
             }
             vertexB.addEdge(edgeLabel, vertexA,edgeProperty,1);
         }
 
-        g.tx().commit();
         System.out.println("vertex:"+g.V().count().next()+"  edge:"+g.E().count().next());
         graph.tx().commit();
         return "Putting database finished";
@@ -237,28 +249,14 @@ public class JanusGraphService  {
 
     //3,数据批量删除
     public String deleteGraph(String vertexProperty,String edgeProperty){
-        //删除边
-        System.out.println(vertexProperty);
-        System.out.println(edgeProperty);
         GraphTraversalSource g = graph.traversal();
+        while (g.E().has(edgeProperty).hasNext()){
+            g.E().has(edgeProperty).next().inVertex().remove();
+            g.E().has(edgeProperty).next().outVertex().remove();
+        }
         //  mgmt.getPropertyKey(vertexProperty).remove();
         //  mgmt.getPropertyKey(edgeProperty).remove();
-        List<Edge> edgeList = g.E().has(edgeProperty).toList();
-        System.out.println(edgeList.size());
-        Iterator<Edge> edgeIterator = edgeList.iterator();
-        while(edgeIterator.hasNext()){
-            Edge edge=edgeIterator.next();
-            edge.remove();
-        }
-        //  mgmt.getPropertyKey(edgeProperty).remove();
         //删除顶点
-        List<Vertex> vertexList = g.V().has(vertexProperty).toList();
-        Iterator<Vertex> vertexIterator = vertexList.iterator();
-        while(vertexIterator.hasNext()){
-            Vertex vertex = vertexIterator.next();
-            vertex.remove();
-        }
-        mgmt.commit();
         g.tx().commit();
         return "delete successfully!";
 
@@ -272,11 +270,11 @@ public class JanusGraphService  {
         return res;
     }
 
-    //最后的资源释放
-    //  @PreDestroy
+    //资源释放
+      @PreDestroy
     public void closeGraph(){
-
-        mgmt.commit();
+mgmt.commit();
+g.tx().commit();
         graph.close();
     }
 
