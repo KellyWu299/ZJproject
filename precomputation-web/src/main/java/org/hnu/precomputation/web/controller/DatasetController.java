@@ -52,11 +52,12 @@ public class DatasetController {
         dataset.setDescription(param.getDescription());
         dataset.setVertexProperty(param.getVertexProperty());
         dataset.setEdgeProperty(param.getEdgeProperty());
+        datasetService.addDataset(dataset);
         // janusgraph
         if(param.getSource()==2){
             janusGraphService.putFile(file, param.getVertexProperty(), param.getEdgeProperty());
         }
-        datasetService.addDataset(dataset);
+
         return CommonResult.success(dataset);
     }
 
@@ -66,10 +67,14 @@ public class DatasetController {
     @PostMapping("/update")
     public CommonResult<Dataset> update(@RequestBody Dataset dataset) {
         datasetService.update(dataset);
-        //janusgraph待实现
         return CommonResult.success(dataset);
     }
-
+//查看sql
+    @GetMapping("/select")
+    public CommonResult<List<Dataset>> selectAll() {
+        List<Dataset> list = datasetService.list();
+        return CommonResult.success(list);
+    }
     @PostMapping("/delete/{id}")
     public CommonResult<String> delete(@PathVariable("id") Long id){
         Dataset dataset = datasetService.queryDataset(id);
