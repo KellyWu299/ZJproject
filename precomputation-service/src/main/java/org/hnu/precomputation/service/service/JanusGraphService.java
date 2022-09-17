@@ -181,34 +181,27 @@ public class JanusGraphService  {
     //以下功能适用于批量处理
     //1,数据批量增加
     public String putFile(MultipartFile file, String vertexProperty,String edgeProperty) throws Exception {
-        System.out.println("test1");
         g = graph.traversal();
         //为新的property构建索引
         PropertyKey V_propertyKey = mgmt.makePropertyKey(vertexProperty).dataType(Integer.class).make();
         PropertyKey E_propertyKey = mgmt.makePropertyKey(edgeProperty).dataType(Integer.class).make();
-        System.out.println("test2");
         mgmt.buildIndex(vertexProperty,Vertex.class).addKey(V_propertyKey).buildCompositeIndex();
        mgmt.buildIndex(edgeProperty,Edge.class).addKey(E_propertyKey).buildCompositeIndex();
-       // ManagementSystem.awaitGraphIndexStatus(graph, "searchVertex").call();
-        System.out.println("test3");
-      mgmt.commit();
-        mgmt = graph.openManagement();
+      this.mgmt.commit();
+        this.mgmt = graph.openManagement();
        mgmt.updateIndex(mgmt.getGraphIndex(vertexProperty), SchemaAction.REINDEX).get();
         mgmt.updateIndex(mgmt.getGraphIndex(edgeProperty), SchemaAction.REINDEX).get();
-        mgmt.commit();
-        System.out.println("test4");
-        mgmt = graph.openManagement();
+        this.mgmt.commit();
+        this.mgmt = graph.openManagement();
         //导入数据
         List<Integer> list = new ArrayList<>();
         InputStream fis = file.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-        System.out.println("test5");
         String s = null;
         Vertex vertexB, vertexA;
         System.out.println("开始添加数据:");
         int i = 1;
         while ((s = br.readLine()) != null) {
-            System.out.println("test6");
             String[] str = s.split(",");
             Integer a = Integer.parseInt(str[0]);
             Integer b = Integer.parseInt(str[1]);
@@ -227,8 +220,6 @@ public class JanusGraphService  {
             }
             vertexB.addEdge(edgeLabel, vertexA,edgeProperty,1);
         }
-
-        System.out.println("vertex:"+g.V().count().next()+"  edge:"+g.E().count().next());
         graph.tx().commit();
         return "Putting database finished";
     }
@@ -254,22 +245,30 @@ public class JanusGraphService  {
 
     //3,数据批量删除
     public String deleteGraph(String vertexProperty,String edgeProperty){
-        GraphTraversalSource g = graph.traversal();
-        JanusGraphManagement mgmt = graph.openManagement();
-      /*  while (g.E().has(edgeProperty).hasNext()){
-            System.out.println(2);
-            g.E().has(edgeProperty).next().inVertex().remove();
-            g.E().has(edgeProperty).next().outVertex().remove();
-        }
-        //  mgmt.getPropertyKey(vertexProperty).remove();
-        //  mgmt.getPropertyKey(edgeProperty).remove();
+        List<Vertex> vertexList = g.V().has(vertexProperty).toList();
         //删除顶点
-       */
-        GraphTraversal<Vertex, Vertex> iterate = g.V().has(vertexProperty).iterate();
-        while (iterate.hasNext()){
-            Vertex vertex = iterate.next();
+        for(int i=0;i< vertexList.size();i++){
+            Vertex vertex = vertexList.get(i);
+            System.out.println(vertex);
             vertex.remove();
         }
+        mgmt.getPropertyKey(edgeProperty).remove();
+        mgmt.getPropertyKey(vertexProperty).remove();
+        //删除索引
+        JanusGraphIndex vertexIndex = mgmt.getGraphIndex(vertexProperty);
+        JanusGraphIndex edgeIndex = mgmt.getGraphIndex(edgeProperty);
+        mgmt.updateIndex(vertexIndex, SchemaAction.DISABLE_INDEX);
+        mgmt.updateIndex(edgeIndex, SchemaAction.DISABLE_INDEX);
+        this.mgmt.commit();
+        this.mgmt=graph.openManagement();
+        mgmt.updateIndex(vertexIndex, SchemaAction.REMOVE_INDEX);
+        mgmt.updateIndex(edgeIndex, SchemaAction.REMOVE_INDEX);
+        mgmt.commit();
+        this.mgmt=graph.openManagement();
+        System.out.println(mgmt.printSchema());
+        System.out.println("vertex:"+g.V().count().next()+"  edge:"+g.E().count().next());
+        vertexList.clear();
+
         return "delete successfully!";
 
     }
