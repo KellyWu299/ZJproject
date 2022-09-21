@@ -27,7 +27,11 @@ public class AlgoController {
     @Autowired
     private DatasetService datasetService;
 
-    //根据id获取数据集betweenness值
+    /**
+     * 根据id获取全局betweenness值
+     * @param id （对应数据库表中元数据的id值）
+     * @return betweenness Map
+     */
     @GetMapping("/computeBcById")
     public CommonResult<Map<Object, Double>> computeBcById(@RequestParam("id") long id) {
         Map<Object, Double> res =  graphComputeService.getBetweenness(id);
@@ -36,7 +40,7 @@ public class AlgoController {
         }
         return CommonResult.success(res);
     }
-    //根据id查询数据集
+    //根据id查询数据集（仅用于测试）
     @GetMapping("/queryDatasetById")
     public CommonResult<ArrayList<Pair>> queryDataset(@RequestParam("id") long id) {
         Dataset dataset = datasetService.queryDataset(id);  //根据id获取图元数据
