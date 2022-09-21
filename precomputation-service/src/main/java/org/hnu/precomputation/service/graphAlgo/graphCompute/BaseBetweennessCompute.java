@@ -5,7 +5,7 @@ import org.hnu.precomputation.service.graphAlgo.util.GraphUtil;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BaseBetweenessCompute {
+public class BaseBetweennessCompute {
     private int N;
     private Map<Object, Integer> id2index;
     private Map<Integer, Object> index2Id;
@@ -26,7 +26,7 @@ public class BaseBetweenessCompute {
     private Map<Object, Double> closenessMap;
     private Map<Object, Double> eccentricityMap;
 
-    public BaseBetweenessCompute(Map<Object, List<Object>> neighborMap, boolean isDirected, boolean isNormalized) {
+    public BaseBetweennessCompute(Map<Object, List<Object>> neighborMap, boolean isDirected, boolean isNormalized) {
         //初始化
         N = neighborMap.size();
         id2index = new HashMap<>();

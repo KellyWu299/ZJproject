@@ -1,7 +1,7 @@
 package org.hnu.precomputation.service.service;
 
 import org.hnu.precomputation.common.model.dataset.Dataset;
-import org.hnu.precomputation.service.graphAlgo.graphCompute.BaseBetweenessCompute;
+import org.hnu.precomputation.service.graphAlgo.graphCompute.BaseBetweennessCompute;
 import org.hnu.precomputation.service.graphAlgo.util.GraphUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,17 +22,14 @@ public class GraphComputeService {
 
     @Autowired
     private JanusGraphService janusGraphService;
-
-    public Map<Object, Double> getBetweeness(Long id){
-        System.out.println("---------------------------------test--------------------------");
+    // 根据id计算指定图数据集的betweenness
+    public Map<Object, Double> getBetweenness(Long id){
         Dataset dataset = datasetService.queryDataset(id);  //根据id获取图元数据
         ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getVertexProperty(), dataset.getEdgeProperty());  //获取图数据集
         Map<Object, List<Object>> mMap = GraphUtil.gFormat(g);  //格式转换
-        BaseBetweenessCompute baseBetweenessCompute = new BaseBetweenessCompute(mMap, false, false);
-        baseBetweenessCompute.execute();  //计算BC
-        return  baseBetweenessCompute.getBetweennessMap();
+        BaseBetweennessCompute baseBetweennessCompute = new BaseBetweennessCompute(mMap, false, false);
+        baseBetweennessCompute.execute();  //计算BC
+        return  baseBetweennessCompute.getBetweennessMap();
 
     }
-//    BaseBetweenessCompute baseBetweenessCompute = new BaseBetweenessCompute();
-
 }

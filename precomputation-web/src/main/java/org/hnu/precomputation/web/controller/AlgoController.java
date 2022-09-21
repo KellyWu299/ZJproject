@@ -27,15 +27,16 @@ public class AlgoController {
     @Autowired
     private DatasetService datasetService;
 
-    @GetMapping("/computeById")
-    public CommonResult<Map<Object, Double>> queryById(@RequestParam("id") long id) {
-        Map<Object, Double> res =  graphComputeService.getBetweeness(id);
+    //根据id获取数据集betweenness值
+    @GetMapping("/computeBcById")
+    public CommonResult<Map<Object, Double>> computeBcById(@RequestParam("id") long id) {
+        Map<Object, Double> res =  graphComputeService.getBetweenness(id);
         if (res == null) {
             return CommonResult.failed();
         }
         return CommonResult.success(res);
     }
-
+    //根据id查询数据集
     @GetMapping("/queryDatasetById")
     public CommonResult<ArrayList<Pair>> queryDataset(@RequestParam("id") long id) {
         Dataset dataset = datasetService.queryDataset(id);  //根据id获取图元数据
