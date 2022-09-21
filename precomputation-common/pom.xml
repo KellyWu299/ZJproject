@@ -52,6 +52,11 @@
             <artifactId>janusgraph-cql</artifactId>
             <version>0.6.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+            <version>3.4.3</version>
+        </dependency>
 
     </dependencies>
 
