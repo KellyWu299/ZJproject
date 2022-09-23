@@ -31,6 +31,10 @@ public class Dataset {
      */
     private String vertexProperty;
     private String edgeProperty;
+    /**
+     * 任务名称
+     */
+    private String taskName;
 
 
 }

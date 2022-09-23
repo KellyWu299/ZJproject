@@ -23,4 +23,9 @@ public class DatasetAddParam {
 
     private String edgeProperty;
 
+    /**
+     * 任务名称
+     */
+    private String taskName;
+
 }

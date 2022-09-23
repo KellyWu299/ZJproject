@@ -47,20 +47,6 @@
             <artifactId>gremlin-server</artifactId>
             <version>3.5.3</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>com.datastax.cassandra</groupId>
-            <artifactId>cassandra-driver-core</artifactId>
-            <version>3.11.1</version>
-            <exclusions>
-
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-handler</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
--->
     </dependencies>
 
     <build>
@@ -86,7 +72,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>org.hnu.precomputation.web.PrecomputationApplication</mainClass>
+                    <mainClass>org.hnu.precomputation.service.web.PrecomputationApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

@@ -1,4 +1,4 @@
-package org.hnu.precomputation.service.service;
+package org.hnu.precomputation.service.handle;
 
 public class Pair {
     public Long vertex1;
