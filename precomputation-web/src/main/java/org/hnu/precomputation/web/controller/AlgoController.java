@@ -51,4 +51,31 @@ public class AlgoController {
         return CommonResult.success(res);
     }
 
+    @GetMapping("/computeEgoByIdUsingBaseBSearch")
+    public CommonResult<Map<Integer, Float>> computeEgoByIdUsingBaseBSearch(@RequestParam("id") long id) {
+        Map<Integer, Float> res =  graphComputeService.gEgoUsingBaseBSearch(id);
+        if (res == null) {
+            return CommonResult.failed();
+        }
+        return CommonResult.success(res);
+    }
+
+    @GetMapping("/computeEgoByIdUsingOptBSearch")
+    public CommonResult<Map<Integer, Float>> computeEgoByIdUsingOptBSearch(@RequestParam("id") long id) {
+        Map<Integer, Float> res =  graphComputeService.gEgoUsingOptBSearch(id);
+        if (res == null) {
+            return CommonResult.failed();
+        }
+        return CommonResult.success(res);
+    }
+
+    @GetMapping("/computeEgoByIdUsingAdjMatrix")
+    public CommonResult<Map<Integer, Float>> computeEgoByIdUsingAdjMatrix(@RequestParam("id") long id) {
+        Map<Integer, Float> res =  graphComputeService.gEgoUsingAdjMatrix(id);
+        if (res == null) {
+            return CommonResult.failed();
+        }
+        return CommonResult.success(res);
+    }
+
 }

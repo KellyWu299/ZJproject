@@ -75,4 +75,18 @@ public class GraphUtil {
         return mMap;
     }
 
+    public static ArrayList<long[]> gFormatForEgo(ArrayList<Pair> g) {
+        ArrayList<long[]> pairs = new ArrayList<long[]>();
+        try {
+            for (Pair pair : g) {
+                long v1 = pair.vertex1;
+                long v2 = pair.vertex2;
+                pairs.add(new long[]{v1, v2});
+            }
+        } catch (Exception e){
+            System.out.println("format error !!!");
+        }
+        return pairs;
+    }
+
 }
