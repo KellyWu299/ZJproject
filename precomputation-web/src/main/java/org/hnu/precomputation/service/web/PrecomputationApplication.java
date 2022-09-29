@@ -1,4 +1,4 @@
-package org.hnu.precomputation.web;
+package org.hnu.precomputation.service.web;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;

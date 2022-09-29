@@ -21,8 +21,6 @@ spring:
       pool-prepared-statements: true
       max-pool-prepared-statement-per-connection-size: 10
 
-
-
 mybatis:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package:
