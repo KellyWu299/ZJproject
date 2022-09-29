@@ -1,18 +1,17 @@
 package org.hnu.precomputation.service.service;
 
-import groovy.util.logging.Slf4j;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.hnu.precomputation.service.handle.Pair;
+import org.hnu.precomputation.service.Impl.Pair;
 import org.janusgraph.core.*;
 import org.janusgraph.core.schema.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +28,7 @@ import java.util.List;
 @Slf4j
 public class JanusGraphService  {
     private final static Logger logger = LoggerFactory.getLogger("JanusGraphService");
-    String path="precomputation-service/src/main/resources/janusgraph-cql.properties";
+    String path="precomputation-service/src/main/resources/janusgraph-hbase01.properties";
     JanusGraph graph;
     String edgeLabel="E_Label";
     String vertexLabel="V_Label";
@@ -38,6 +37,7 @@ public class JanusGraphService  {
     List<Object> edgeIdlist=new ArrayList<>();
     JanusGraphManagement mgmt;
     GraphTraversalSource g;
+    Graph threadedTx;
     @Autowired
      private HttpServletRequest httpServletRequest;
     @Autowired
@@ -51,7 +51,8 @@ public class JanusGraphService  {
         this.graph=graph;
         this.mgmt=graph.openManagement();
         this.g = graph.traversal();
-      //  this.threadedTx = graph.tx().createThreadedTx();
+        this.threadedTx = graph.tx().createThreadedTx();
+        //  this.threadedTx = graph.tx().createThreadedTx();
         //初始化schema
         if(!graph.containsPropertyKey(vertexProperty)) {
             JanusGraphManagement  mgmt = graph.openManagement();
@@ -192,15 +193,20 @@ public class JanusGraphService  {
     @Async
     public String putFile(MultipartFile file, String vertexProperty,String edgeProperty) throws Exception {
         //为新的property构建索引
-        logger.info("线程"+Thread.currentThread().getName()+"         构建索引...");
+        GraphTraversalSource gTx = threadedTx.traversal();
+        log.info("线程"+Thread.currentThread().getName()+"         构建索引...");
         PropertyKey V_propertyKey = mgmt.makePropertyKey(vertexProperty).dataType(Integer.class).make();
         PropertyKey E_propertyKey = mgmt.makePropertyKey(edgeProperty).dataType(Integer.class).make();
         mgmt.buildIndex(vertexProperty,Vertex.class).addKey(V_propertyKey).buildCompositeIndex();
        mgmt.buildIndex(edgeProperty,Edge.class).addKey(E_propertyKey).buildCompositeIndex();
-      mgmt.commit();
+       mgmt.commit();
+      log.info("构建完成");
        this.mgmt = graph.openManagement();
-       mgmt.updateIndex(mgmt.getGraphIndex(vertexProperty), SchemaAction.REINDEX).get();
-        mgmt.updateIndex(mgmt.getGraphIndex(edgeProperty), SchemaAction.REINDEX).get();
+    /*   log.info("注册索引.....");
+       mgmt.updateIndex(mgmt.getGraphIndex(vertexProperty), SchemaAction.ENABLE_INDEX).get();
+        mgmt.updateIndex(mgmt.getGraphIndex(edgeProperty), SchemaAction.ENABLE_INDEX).get();
+
+     */
         //导入数据
         logger.info("线程"+Thread.currentThread().getName()+":         导入数据....");
         List<Integer> list = new ArrayList<>();
@@ -214,22 +220,24 @@ public class JanusGraphService  {
             Integer a = Integer.parseInt(str[0]);
             Integer b = Integer.parseInt(str[1]);
             if (list.contains(a)) {
-                vertexA = g.V().has(vertexProperty, a).next();
+                vertexA = gTx.V().has(vertexProperty, a).next();
             } else {
-                vertexA = g.addV(vertexLabel).property(vertexProperty, a).next();
+                vertexA = gTx.addV(vertexLabel).property(vertexProperty, a).next();
 
                 list.add(a);
             }
             if (list.contains(b)) {
-                vertexB = g.V().has(vertexProperty,b).next();
+                vertexB = gTx.V().has(vertexProperty,b).next();
             } else {
-                vertexB = g.addV(vertexLabel).property(vertexProperty, b).next();
+                vertexB =gTx.addV(vertexLabel).property(vertexProperty, b).next();
                 list.add(b);
             }
             vertexB.addEdge(edgeLabel, vertexA,edgeProperty,1);
+           // System.out.println("vertexA:  "+vertexA+"     vertexB"  +vertexB);
         }
-        g.tx().commit();
-        this.g=graph.traversal();
+        gTx.tx().commit();
+        this.mgmt = graph.openManagement();
+     //   this.g=graph.traversal();
 
         return "Putting database finished";
     }
@@ -286,7 +294,7 @@ public class JanusGraphService  {
     }
 
     //资源释放
-
+@PreDestroy
     public void closeGraph(){
         mgmt.commit();
         g.tx().commit();

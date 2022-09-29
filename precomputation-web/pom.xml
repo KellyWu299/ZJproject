@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.janusgraph</groupId>
-            <artifactId>janusgraph-cql</artifactId>
+            <artifactId>janusgraph-hbase</artifactId>
             <version>0.6.2</version>
         </dependency>
         <dependency>

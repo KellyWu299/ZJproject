@@ -8,7 +8,7 @@ import org.hnu.precomputation.common.model.api.CommonResult;
 import org.hnu.precomputation.common.model.dataset.Dataset;
 import org.hnu.precomputation.common.model.dataset.Task;
 import org.hnu.precomputation.common.view.dataset.DatasetAddParam;
-import org.hnu.precomputation.service.handle.Pair;
+import org.hnu.precomputation.service.Impl.Pair;
 import org.hnu.precomputation.service.service.DatasetService;
 import org.hnu.precomputation.service.service.JanusGraphService;
 import org.hnu.precomputation.service.service.NebulaGraphService;
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @RestController
@@ -61,18 +62,18 @@ public class DatasetController {
 
     @PostMapping("/addDataset")
     public CommonResult<String> addDataset(@RequestParam("file")MultipartFile[] files, @RequestPart("req") @Valid List<DatasetAddParam> params) throws Exception {
-        int i=0;
-        for(MultipartFile file : files){
+        int i = 0;
+        for (MultipartFile file : files) {
             //加入dataset的sql
             int finalI = i;
             CompletableFuture<Void> addDataset = CompletableFuture.runAsync(() -> {
-            Dataset dataset = new Dataset();
-            dataset.setName(file.getOriginalFilename());
-            dataset.setSource(params.get(finalI).getSource());
-            dataset.setDescription(params.get(finalI).getDescription());
-            dataset.setVertexProperty(params.get(finalI).getVertexProperty());
-            dataset.setEdgeProperty(params.get(finalI).getEdgeProperty());
-                System.out.println(finalI+"addDataset初始化完成");
+                Dataset dataset = new Dataset();
+                dataset.setName(file.getOriginalFilename());
+                dataset.setSource(params.get(finalI).getSource());
+                dataset.setDescription(params.get(finalI).getDescription());
+                dataset.setVertexProperty(params.get(finalI).getVertexProperty());
+                dataset.setEdgeProperty(params.get(finalI).getEdgeProperty());
+                System.out.println(finalI + "addDataset初始化完成");
                 datasetService.addDataset(dataset);
             }, threadPoolTaskExecutor);
             log.info("Dataset对象初始化完成...");
@@ -81,7 +82,7 @@ public class DatasetController {
             int finalI1 = i;
             CompletableFuture<Void> addTaskData = CompletableFuture.runAsync(() -> {
                 log.info("加入任务Task...");
-             Task task=new Task();
+                Task task = new Task();
                 task.setCreatedTime(new Date());
                 task.setTaskName(params.get(finalI1).getTaskName());
                 task.setReqParam(file.getName());
@@ -95,12 +96,12 @@ public class DatasetController {
                 }
 
                 //janusgraph:
-                if(params.get(finalI1).getSource()==2) {
-                    log.info("线程名:"+Thread.currentThread().getName()+":janusgraph 导入数据");
-              //利用构造器,将表中的deal_time和task_status进行更新
+                if (params.get(finalI1).getSource() == 2) {
+                    log.info("线程名:" + Thread.currentThread().getName() + ":janusgraph 导入数据");
+                    //利用构造器,将表中的deal_time和task_status进行更新
                     UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
                     updateWrapper.eq("id", id).set("task_status", 2).set("deal_time", new Date());
-                    taskService.update(null,updateWrapper);
+                    taskService.update(null, updateWrapper);
                     try {
                         janusGraphService.putFile(file, params.get(finalI1).getVertexProperty(), params.get(finalI1).getEdgeProperty());
                     } catch (Exception e) {
@@ -108,21 +109,17 @@ public class DatasetController {
                     }
                     //更新task表任务状态和完成时间,其他属性不变
                     updateWrapper.eq("id", id).set("task_status", 3).set("finish_time", new Date());
-                    taskService.update(null,updateWrapper);
-                    log.info(Thread.currentThread().getName()+":janusgraph 导入数据完成");
+                    taskService.update(null, updateWrapper);
+                    log.info(Thread.currentThread().getName() + ":janusgraph 导入数据完成");
                 }
 
 
             }, threadPoolTaskExecutor);
-            CompletableFuture.allOf(addTaskData,addDataset).get();
+            CompletableFuture.allOf(addTaskData, addDataset).get();
             i++;
         }
-
-//等待完成
-
-        return CommonResult.success("Finished successfully!");
+     return CommonResult.success("add dataset successfully!");
     }
-
 
     // post请求，需要body作为参数
     @PostMapping("/update")
@@ -174,7 +171,7 @@ public class DatasetController {
         return CommonResult.success(list);
     }
     //每10秒打印一次
-    @Scheduled(cron = "0/10 * * * * ?")
+ //   @Scheduled(cron = "0/10 * * * * ?")
 public void printTask(){
         System.out.println(taskService.list());
     }
