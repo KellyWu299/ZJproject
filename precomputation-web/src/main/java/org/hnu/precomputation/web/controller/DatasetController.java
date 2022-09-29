@@ -1,4 +1,3 @@
-
 package org.hnu.precomputation.web.controller;
 
 
@@ -84,9 +83,6 @@ public class DatasetController {
             result = janusGraphService.deleteGraph(dataset.getVertexProperty(), dataset.getEdgeProperty());
         }
         datasetService.delete(id);
-
-
-
         return CommonResult.success(result);
     }
 
@@ -105,12 +101,4 @@ public class DatasetController {
     public CommonResult<String> countGraph(){
         return CommonResult.success(janusGraphService.countGraph());
     }
-
-
-
 }
-
-
-
-
-
