@@ -1,7 +1,5 @@
 package org.hnu.precomputation.service.graphAlgo.graphCompute.egoBetweenness;
 
-import org.hnu.precomputation.service.service.Pair;
-
 import java.util.ArrayList;
 import java.util.Map;
 

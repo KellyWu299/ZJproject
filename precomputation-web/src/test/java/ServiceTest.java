@@ -3,8 +3,9 @@ import org.hnu.precomputation.service.graphAlgo.util.GraphUtil;
 import org.hnu.precomputation.service.service.DatasetService;
 import org.hnu.precomputation.service.service.GraphComputeService;
 import org.hnu.precomputation.service.service.JanusGraphService;
-import org.hnu.precomputation.service.service.Pair;
-import org.hnu.precomputation.web.PrecomputationApplication;
+import org.hnu.precomputation.service.Impl.Pair;
+import org.hnu.precomputation.service.web.PrecomputationApplication;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +26,7 @@ public class ServiceTest {
 
     @Test
     public void test() {
-        long id = 121;
+        long id = 135;
         Dataset dataset = datasetService.queryDataset(id);  //根据id获取图元数据
         ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getVertexProperty(), dataset.getEdgeProperty());  //获取图数据集
         Map<Object, List<Object>> mMap = GraphUtil.gFormat(g);  //格式转换

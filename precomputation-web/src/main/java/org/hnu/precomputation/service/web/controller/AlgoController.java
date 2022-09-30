@@ -1,13 +1,12 @@
-package org.hnu.precomputation.web.controller;
+package org.hnu.precomputation.service.web.controller;
 
 import org.hnu.precomputation.common.model.api.CommonResult;
 import org.hnu.precomputation.common.model.dataset.Dataset;
 import org.hnu.precomputation.service.service.DatasetService;
 import org.hnu.precomputation.service.service.GraphComputeService;
 import org.hnu.precomputation.service.service.JanusGraphService;
-import org.hnu.precomputation.service.service.Pair;
+import org.hnu.precomputation.service.Impl.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
