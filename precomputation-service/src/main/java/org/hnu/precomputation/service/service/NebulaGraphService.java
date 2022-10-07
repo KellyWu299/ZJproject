@@ -1,48 +1,33 @@
 package org.hnu.precomputation.service.service;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.vesoft.nebula.client.graph.NebulaPoolConfig;
 import com.vesoft.nebula.client.graph.data.HostAddress;
-import com.vesoft.nebula.client.graph.data.ResultSet;
-import com.vesoft.nebula.client.graph.data.ValueWrapper;
-import com.vesoft.nebula.client.graph.exception.IOErrorException;
 import com.vesoft.nebula.client.graph.net.NebulaPool;
 import com.vesoft.nebula.client.graph.net.Session;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.hnu.precomputation.common.model.Nebula.ClassAutoMapping;
-import org.hnu.precomputation.common.model.Nebula.FieldAutoMapping;
+import org.hnu.precomputation.common.model.Nebula.*;
 import org.hnu.precomputation.common.model.api.NebulaResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.hnu.precomputation.common.model.api.NebulaConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.hnu.precomputation.common.model.Nebula.Edge;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import java.io.*;
-import java.lang.annotation.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class NebulaGraphService {
     private final static Logger logger = LoggerFactory.getLogger("NebulaGraphService");
+    @Autowired
+    NebulaTemplate nebulaTemplate;
     /*初始化*/
     public class NebulaConfig {
         @Bean
@@ -228,6 +213,36 @@ public class NebulaGraphService {
 //            System.out.println();
 //        }
 //    }
+    public Object tasksservice(String s){
+        String s1 = String.format("LOOKUP ON %s YIELD edge AS e",s);
+        NebulaResult<nebulaEdge> teamNebulaResult = nebulaTemplate.queryObject(s1, nebulaEdge.class);
+
+        List<nebulaEdge> list = teamNebulaResult.getData();
+
+        Iterator<nebulaEdge> iterator =list.iterator();
+        List<serviceEdge> list1 = new ArrayList<>();
+        while(iterator.hasNext()){
+            String its = String.valueOf(iterator.next());
+            JSONObject jsonObject = JSON.parseObject(its);
+            JSONObject jsonObject1 = (JSONObject) jsonObject.get("e");
+
+            System.out.println(jsonObject.get("e"));
+            String r = (String)jsonObject1.get("rightVid");
+            String l = (String) jsonObject1.get("leftVid");
+            serviceEdge serviceEdge=new serviceEdge();
+            serviceEdge.setLeft(r);
+            serviceEdge.setRight(l);
+            list1.add(serviceEdge);
+
+
+        }
+        System.out.println(list1);
+        return list1;
+
+
+    }
+
+
 
 
 

@@ -60,7 +60,8 @@ public class DatasetController {
         dataset.setDescription(param.getDescription());
         datasetService.addDataset(dataset);
         if(param.getSource()==1){
-            nebulaGraphService.OpenNebula(file);
+            nebulaGraphService.tasksservice("nebulaEdge");
+//            nebulaGraphService.OpenNebula(file);
         }
         return CommonResult.success(dataset);
     }

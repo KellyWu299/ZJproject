@@ -1,17 +1,14 @@
 package org.hnu.precomputation.web.controller;
 
-import com.vesoft.nebula.client.graph.exception.IOErrorException;
 import lombok.extern.slf4j.Slf4j;
+import org.hnu.precomputation.common.model.Nebula.nebulaEdge;
 import org.hnu.precomputation.common.model.Nebula.team;
-import org.hnu.precomputation.common.model.Nebula.teamEdge;
 import org.hnu.precomputation.common.model.api.NebulaResult;
-import org.hnu.precomputation.service.service.NebulaGraphService;
 import org.hnu.precomputation.service.service.NebulaTemplate;
 import org.hnu.precomputation.service.service.SqlBuildUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 @Slf4j
 @RestController
@@ -53,7 +50,7 @@ public class NebulaController {
         return nebulaResult;
     }
     @PostMapping("/addEdge")
-    public Object addEdge(@RequestBody teamEdge te) throws  InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public Object addEdge(@RequestBody nebulaEdge te) throws  InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         String ss = sqlBuildUtils.buildEdge(te);
         System.out.println(ss);
         NebulaResult nebulaResult = nebulaTemplate.executeObject(ss);
@@ -67,7 +64,7 @@ public class NebulaController {
         return nebulaResult;
     }
     @PostMapping("/updateEdge")
-    public Object updateEdge(@RequestBody teamEdge te) throws  InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public Object updateEdge(@RequestBody nebulaEdge te) throws  InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         String ss = sqlBuildUtils.updateEdge(te);
         System.out.println(ss);
         NebulaResult nebulaResult = nebulaTemplate.executeObject(ss);
@@ -85,10 +82,21 @@ public class NebulaController {
     public Object queryEdge(String Name,String lid,String rid) throws  InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         String ss = sqlBuildUtils.queryEgde(Name,lid,rid);
         System.out.println(ss);
-        NebulaResult<team> teamNebulaResult = nebulaTemplate.queryObject(ss, team.class);
+        NebulaResult<nebulaEdge> teamNebulaResult = nebulaTemplate.queryObject(ss, nebulaEdge.class);
 
         return teamNebulaResult;
     }
-
-
+    @GetMapping("/createEdgeIndex")
+    public Object createEdgeIndex(String s){
+        String ss= sqlBuildUtils.createEIndex(s);
+        System.out.println(ss);
+        NebulaResult nebulaResult = nebulaTemplate.executeObject(ss);
+        return nebulaResult;
+    }
+//    @GetMapping("/test")
+//    public Object test(String s){
+//        NebulaGraphService.tasksservice(s);
+//        NebulaResult nebulaResult = new NebulaResult<>();
+//        return nebulaResult;
+//    }
 }

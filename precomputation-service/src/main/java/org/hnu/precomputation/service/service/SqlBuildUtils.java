@@ -1,7 +1,7 @@
 package org.hnu.precomputation.service.service;
 
 import org.hnu.precomputation.common.model.Nebula.ClassAutoMapping;
-import org.hnu.precomputation.common.model.Nebula.Edge;
+import org.hnu.precomputation.common.model.Nebula.nebulaEdge;
 import org.hnu.precomputation.common.model.Nebula.FieldAutoMapping;
 import org.springframework.stereotype.Component;
 
@@ -46,12 +46,16 @@ public class SqlBuildUtils {
 
         private static final String fetchEdgeSqlTemplate = "FETCH PROP ON %s \"%s\" -> \"%s\" YIELD properties(edge);";
 
+        private static final String createEdgeIndex = "CREATE EDGE INDEX nebulaEdge_index on %s();";
+
+//        private static final String lookupEdge = "LOOKUP ON %s YIELD edge AS e;";
+
         public static <T> String buildInsert(T t) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
             SqlBuild tag = parse(t);
             return String.format(insertTagSqlTemplate, tag.getName(), tag.getField(), tag.getId(), tag.getValues());
         }
 
-        public static <T extends Edge> String buildEdge(T t) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        public static  String buildEdge(nebulaEdge t) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
             SqlBuild edge = parse(t);
             return String.format(insertEdgeSqlTemplate, edge.getName(), edge.getField(), t.getLeftVid(), t.getRightVid(), edge.getValues());
         }
@@ -63,6 +67,10 @@ public class SqlBuildUtils {
 
         public static String deleteEdge(String edgeName, String leftid, String rightid){
             return String.format(deleteEdgeSqlTemplate,edgeName,leftid,rightid);
+        }
+
+        public static <T> String createEIndex(String s){
+            return String.format(createEdgeIndex,s);
         }
 
         public static <T> String deleteVertex(String id){
@@ -102,7 +110,7 @@ public class SqlBuildUtils {
             return String.format(updateVertexSqlTemplate,tagName,id,set.toString());
         }
 
-        public static <T extends Edge> String updateEdge(T t) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException{
+        public static String updateEdge(nebulaEdge t) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException{
             Class<?> clazz = t.getClass();
             ClassAutoMapping annotation = clazz.getAnnotation(ClassAutoMapping.class);
             String tagName = annotation.value();
@@ -142,6 +150,9 @@ public class SqlBuildUtils {
             return String.format(fetchEdgeSqlTemplate,name,lid,rid);
         }
 
+//        public static String lookupE(String s){
+//            return String.format(lookupEdge,s);
+//        }
         public static String updateDefault(String tagName,Long vid,String name, String description){
             String setCall = "name="+format(name,"String")+",description="+format(description,"String");
             return String.format(updateVertexSqlTemplate,tagName,vid,setCall);
@@ -174,10 +185,30 @@ public class SqlBuildUtils {
                     id = (String) value;
                 }
                 System.out.println(tagName);
-                valueString.append(valueFormat);
-                if("teamEdge".equals(tagName)){
+
+                if("nebulaEdge".equals(tagName)){
+                    if (i == 0) {
+                        valueString.append("'");
+                        valueString.append(valueFormat);
+                        filedString.append(",");
+                        valueString.append("'");
+                        valueString.append(",");
+                        valueString.append("'");
+                    }
+                    if (i == 1) {
+                        valueString.append(valueFormat);
+                        filedString.append(",");
+                        valueString.append("'");
+                        valueString.append(",");
+                        valueString.append("'");
+                    }
+                    if (i == 2) {
+                        valueString.append(valueFormat);
+                        valueString.append("'");
+                    }
                 }
                 else {
+                    valueString.append(valueFormat);
                     if (i == 0) {
                         filedString.append(",");
                         valueString.append(",");
