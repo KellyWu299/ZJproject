@@ -3,7 +3,7 @@ package org.hnu.precomputation.common.model.Nebula;
 import lombok.Data;
 
 @Data
-
+//nebula测试用点类型
 @ClassAutoMapping("team")
 public class team {
     @FieldAutoMapping(method = "getId" ,type = "id")

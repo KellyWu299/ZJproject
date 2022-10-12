@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Locale;
 @Component
+//工具类，用于生成合适的NGQL语句
 public class SqlBuildUtils {
 
 
@@ -48,6 +49,10 @@ public class SqlBuildUtils {
 
         private static final String createEdgeIndex = "CREATE EDGE INDEX nebulaEdge_index on %s();";
 
+        private static final String useGraphTemplate = "USE %s;";
+
+        private static final String createSpaceTemplate = "CREATE SPACE IF NOT EXISTS %s (vid_type=FIXED_STRING(30));";
+
 //        private static final String lookupEdge = "LOOKUP ON %s YIELD edge AS e;";
 
         public static <T> String buildInsert(T t) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -68,6 +73,15 @@ public class SqlBuildUtils {
         public static String deleteEdge(String edgeName, String leftid, String rightid){
             return String.format(deleteEdgeSqlTemplate,edgeName,leftid,rightid);
         }
+
+        public static String chooseGraph(String s){
+            return String.format(useGraphTemplate,s);
+        }
+
+        public static String createSpace(String s){
+            return String.format(createSpaceTemplate,s);
+        }
+
 
         public static <T> String createEIndex(String s){
             return String.format(createEdgeIndex,s);

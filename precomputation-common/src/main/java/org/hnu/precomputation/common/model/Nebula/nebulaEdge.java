@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 @Data
-/*边的通用属性*/
+/*nebula测试边*/
 @ClassAutoMapping("nebulaEdge")
 public class nebulaEdge extends JSONObject {
 

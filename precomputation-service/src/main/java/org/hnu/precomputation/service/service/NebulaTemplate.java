@@ -16,7 +16,7 @@ import java.util.Objects;
 
 @Slf4j
 @Component
-/*解析*/
+//解析NGQL语言，访问nebula并返回结果
 public class NebulaTemplate {
 
 

@@ -7,6 +7,7 @@ import com.vesoft.nebula.client.graph.data.HostAddress;
 import com.vesoft.nebula.client.graph.net.NebulaPool;
 import com.vesoft.nebula.client.graph.net.Session;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.hnu.precomputation.common.model.Nebula.*;
 import org.hnu.precomputation.common.model.api.NebulaResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class NebulaGraphService {
     private final static Logger logger = LoggerFactory.getLogger("NebulaGraphService");
     @Autowired
     NebulaTemplate nebulaTemplate;
+    @Autowired
+    SqlBuildUtils sqlBuildUtils;
     /*初始化*/
     public class NebulaConfig {
         @Bean
@@ -61,9 +64,8 @@ public class NebulaGraphService {
         }
     }
 
-
-    public void OpenNebula(MultipartFile f) throws InterruptedException, IOException {
-
+    //将上传的数据集文件报存到本地并且调用命令行启动importer导入数据集
+    public void OpenNebula(MultipartFile f, String GraphName) throws InterruptedException, IOException {
         //报存上传的文件
         if (f.isEmpty()) {
 //            return "false";
@@ -84,6 +86,7 @@ public class NebulaGraphService {
         //修改配置文件
         ChangeText changeText = new ChangeText();
         changeText.change(fileName);
+        changeText.ChangeSpace(GraphName);
 
 
 
@@ -117,103 +120,13 @@ public class NebulaGraphService {
         }
     }
 
-    /*在节点上增加注解*/
-//    @Data
-//    @ClassAutoMapping("modelandclass")
-//    public class ModelAndClass implements Serializable {
-//
-//        /**
-//         * id vid
-//         */
-//        @FieldAutoMapping(method = "getId", type = "Long")
-//        private Long id;
-//
-//        /**
-//         * 父级ID
-//         */
-//        @FieldAutoMapping(method = "getPid", type = "Long")
-//        private Long pid;
-//        /**
-//         * 名称
-//         */
-//        @FieldAutoMapping(method = "getName", type = "String")
-//        private String name;
-//
-//        /**
-//         * 描述
-//         */
-//        @FieldAutoMapping(method = "getDescription", type = "String")
-//        private String description;
-//
-//    }
-//    /*增加注解并继承边的通用属性*/
-//    @Data
-//    @AllArgsConstructor
-//    @NoArgsConstructor
-//    @ClassAutoMapping("project_attributeandrelationship")
-//    public class ProjectAttributeAndRelationship extends Edge implements Serializable {
-//
-//        @FieldAutoMapping(method = "getStartId",type = "Long")
-//        private Long startId;
-//
-//        @FieldAutoMapping(method = "getEndId",type = "Long")
-//        private Long endId;
-//
-//    }
 
-//    private static void printResult(ResultSet resultSet) throws UnsupportedEncodingException {
-//        List<String> colNames = resultSet.keys();
-//        for (String name : colNames) {
-//            System.out.printf("%15s |", name);
-//        }
-//        System.out.println();
-//        for (int i = 0; i < resultSet.rowsSize(); i++) {
-//            ResultSet.Record record = resultSet.rowValues(i);
-//            for (ValueWrapper value : record.values()) {
-//                if (value.isLong()) {
-//                    System.out.printf("%15s |", value.asLong());
-//                }
-//                if (value.isBoolean()) {
-//                    System.out.printf("%15s |", value.asBoolean());
-//                }
-//                if (value.isDouble()) {
-//                    System.out.printf("%15s |", value.asDouble());
-//                }
-//                if (value.isString()) {
-//                    System.out.printf("%15s |", value.asString());
-//                }
-//                if (value.isTime()) {
-//                    System.out.printf("%15s |", value.asTime());
-//                }
-//                if (value.isDate()) {
-//                    System.out.printf("%15s |", value.asDate());
-//                }
-//                if (value.isDateTime()) {
-//                    System.out.printf("%15s |", value.asDateTime());
-//                }
-//                if (value.isVertex()) {
-//                    System.out.printf("%15s |", value.asNode());
-//                }
-//                if (value.isEdge()) {
-//                    System.out.printf("%15s |", value.asRelationship());
-//                }
-//                if (value.isPath()) {
-//                    System.out.printf("%15s |", value.asPath());
-//                }
-//                if (value.isList()) {
-//                    System.out.printf("%15s |", value.asList());
-//                }
-//                if (value.isSet()) {
-//                    System.out.printf("%15s |", value.asSet());
-//                }
-//                if (value.isMap()) {
-//                    System.out.printf("%15s |", value.asMap());
-//                }
-//            }
-//            System.out.println();
-//        }
-//    }
-    public Object tasksservice(String s){
+
+
+    //返回某一数据集所有起点和终点的边集合
+    public List<serviceEdge> tasksservice(String s, String SpaceName){
+        String choose = sqlBuildUtils.chooseGraph(SpaceName);
+        nebulaTemplate.executeObject(choose);
         String s1 = String.format("LOOKUP ON %s YIELD edge AS e",s);
         NebulaResult<nebulaEdge> teamNebulaResult = nebulaTemplate.queryObject(s1, nebulaEdge.class);
 
@@ -239,6 +152,21 @@ public class NebulaGraphService {
         System.out.println(list1);
         return list1;
 
+
+    }
+
+    //查找数据集并返回具体信息
+    public Object findSpace(String s){
+        String ss = String.format("DESCRIBE SPACE %s;",s);
+        nebulaTemplate.executeObject(ss);
+        return nebulaTemplate;
+    }
+
+
+    //删除数据集
+    public void deleteSpace(String s){
+        String ss = String.format("DROP SPACE [IF EXISTS] %s",s);
+        nebulaTemplate.executeObject(ss);
 
     }
 

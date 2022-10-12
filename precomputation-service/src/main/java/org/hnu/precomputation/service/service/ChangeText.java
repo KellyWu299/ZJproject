@@ -1,7 +1,10 @@
 package org.hnu.precomputation.service.service;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
+//用于importer导入，提前将配置文件修改
 public class ChangeText {
     public String readFileContent(String BasefilePath,String newAddress) {
         BufferedReader br = null;
@@ -61,6 +64,52 @@ public class ChangeText {
         ChangeText changetext = new ChangeText();
         changetext.writeFile(BasefilePath, changetext.readFileContent(BasefilePath,NewAddress));
     }
+
+
+
+    /*图空间*/
+    public void ChangeSpace(String GraphName) {
+
+        Replace(GraphName,"C:/Users/86152/Desktop/my/zj/impoter/example.yaml");
+
+    }
+
+    public void Replace(String newString,String path){
+        String oldString = "";
+        ArrayList<String> strings = new ArrayList<String>();
+        try {
+            File file = new File(path);
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            String s;//读取的每一行数据
+            while ((s=br.readLine()) != null) {
+                if (s.startsWith("  space:")) {
+                    StringTokenizer st = new StringTokenizer(s, " ");
+                    st.nextToken();
+                    oldString = st.nextToken();
+                    break;
+                }
+            }
+            BufferedReader br1 = new BufferedReader(new FileReader(file));
+            while ((s=br1.readLine()) != null) {
+                if (s.contains(oldString)) {
+                    s = s.replace(oldString, newString);
+                }
+                strings.add(s);//将数据存入集合
+            }
+                BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+                for (String string : strings) {
+                    bw.write(string);//一行一行写入数据
+                    bw.newLine();//换行
+                }
+                bw.close();
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
+
 
 }
 

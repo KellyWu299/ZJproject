@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 @Getter
 @Setter
+//定义一个nebula的返回类
 public class NebulaResult<T> {
     private Integer code;
     private String message;
