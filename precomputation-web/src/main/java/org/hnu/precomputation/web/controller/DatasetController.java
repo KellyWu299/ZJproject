@@ -7,15 +7,18 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.hnu.precomputation.common.model.api.CommonResult;
 import org.hnu.precomputation.common.model.dataset.Dataset;
 import org.hnu.precomputation.common.view.dataset.DatasetAddParam;
+import org.hnu.precomputation.service.graphAlgo.preCompute.H2H_Index;
 import org.hnu.precomputation.service.service.DatasetService;
 import org.hnu.precomputation.service.service.JanusGraphService;
 import org.hnu.precomputation.service.service.Pair;
+import org.hnu.precomputation.service.service.PreComputeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,9 @@ public class DatasetController {
 
     @Autowired
     private JanusGraphService janusGraphService;
+
+    @Autowired
+    private PreComputeService preComputeService;
 
 
     // 一般的get请求,接收一个param参数
@@ -85,8 +91,6 @@ public class DatasetController {
         }
         datasetService.delete(id);
 
-
-
         return CommonResult.success(result);
     }
 
@@ -106,7 +110,11 @@ public class DatasetController {
         return CommonResult.success(janusGraphService.countGraph());
     }
 
-
+    @GetMapping("/makeIndex/{v}/{e}")
+    public CommonResult<String> makeIndex(@PathVariable String v,@PathVariable String e) throws IOException {
+        preComputeService.MakeIndex(v,e);
+        return CommonResult.success(preComputeService.GetPath());
+    }
 
 }
 

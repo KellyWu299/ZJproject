@@ -71,6 +71,12 @@
             <artifactId>gremlin-server</artifactId>
             <version>3.5.3</version>
         </dependency>
+        <!--用于生成索引的预计算-->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20220320</version>
+        </dependency>
 
     </dependencies>
 
