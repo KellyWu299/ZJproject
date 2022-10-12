@@ -288,7 +288,7 @@ public class JanusGraphService  {
     public String countGraph(){
         GraphTraversalSource g = graph.traversal();
         Long v = g.V().count().next();
-        Long e =g.E().count().next();
+        Long e = g.E().count().next();
         String res="vertex:"+v+" edge:"+e;
         return res;
     }
