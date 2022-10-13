@@ -9,6 +9,7 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="source" jdbcType="TINYINT" property="source"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
+        //JanusGraph
         <result column="vertexProperty" jdbcType="VARCHAR" property="vertexProperty"/>
         <result column="edgeProperty" jdbcType="VARCHAR" property="edgeProperty"/>
     </resultMap>
@@ -58,6 +59,14 @@
         where id = #{id}
     </select>
 
+    <select id="selectAll" resultMap="Dataset" parameterType="java.lang.Long">
+        select id, name, source, description
+        from dataset
+    </select>
+    
+    <select id="selectByPrimaryKey" resultMap="Dataset" parameterType="java.lang.Long">
+        select id, name, source, description
+ //JanusGraph
     <select id="selectByPrimaryKey" resultMap="Dataset" parameterType="java.lang.Long">
         select id, name, source, description, vertexProperty,edgeProperty
         from dataset
@@ -82,9 +91,7 @@
             <if test="edgeProperty != null">
                 edgeProperty = #{edgeProperty,jdbcType=VARCHAR},
             </if>
-
         </set>
         where id = #{id,jdbcType=BIGINT}
-    </update>
-
+    </update>    
 </mapper>
