@@ -21,6 +21,7 @@ public class CommonResult<T> {
     }
 
     protected CommonResult(Integer code, String message, T data) {
+//        ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data
         this.code = code;
         this.message = message;
         this.data = data;
