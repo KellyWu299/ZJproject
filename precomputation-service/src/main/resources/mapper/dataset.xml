@@ -9,6 +9,9 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="source" jdbcType="TINYINT" property="source"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
+        //JanusGraph
+        <result column="vertexProperty" jdbcType="VARCHAR" property="vertexProperty"/>
+        <result column="edgeProperty" jdbcType="VARCHAR" property="edgeProperty"/>
     </resultMap>
 
     <insert id="insert" parameterType="org.hnu.precomputation.common.model.dataset.Dataset"
@@ -24,6 +27,12 @@
             <if test="description != null">
                 description,
             </if>
+            <if test="vertexProperty!= null">
+                vertexProperty ,
+            </if>
+            <if test="edgeProperty!= null">
+                edgeProperty ,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null">
@@ -34,6 +43,12 @@
             </if>
             <if test="description != null">
                 #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="vertexProperty != null">
+                #{vertexProperty,jdbcType=VARCHAR},
+            </if>
+            <if test="edgeProperty != null">
+                #{edgeProperty,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -51,6 +66,9 @@
     
     <select id="selectByPrimaryKey" resultMap="Dataset" parameterType="java.lang.Long">
         select id, name, source, description
+ //JanusGraph
+    <select id="selectByPrimaryKey" resultMap="Dataset" parameterType="java.lang.Long">
+        select id, name, source, description, vertexProperty,edgeProperty
         from dataset
         where id = #{id}
     </select>
@@ -67,7 +85,13 @@
             <if test="description != null">
                 description = #{description,jdbcType=VARCHAR},
             </if>
+            <if test="vertexProperty != null">
+                vertexProperty = #{vertexProperty,jdbcType=VARCHAR},
+            </if>
+            <if test="edgeProperty != null">
+                edgeProperty = #{edgeProperty,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
-    </update>
+    </update>    
 </mapper>

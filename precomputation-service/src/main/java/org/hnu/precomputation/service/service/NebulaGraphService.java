@@ -120,9 +120,6 @@ public class NebulaGraphService {
         }
     }
 
-
-
-
     //返回某一数据集所有起点和终点的边集合
     public List<serviceEdge> tasksservice(String s, String SpaceName){
         String choose = sqlBuildUtils.chooseGraph(SpaceName);
@@ -169,11 +166,5 @@ public class NebulaGraphService {
         nebulaTemplate.executeObject(ss);
 
     }
-
-
-
-
-
-
 
 }

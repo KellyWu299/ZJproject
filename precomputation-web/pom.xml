@@ -22,7 +22,6 @@
             <artifactId>precomputation-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.vesoft</groupId>
             <artifactId>client</artifactId>
@@ -70,6 +69,33 @@
         </repository>
     </repositories>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>5.3.22</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.janusgraph</groupId>
+            <artifactId>janusgraph-driver</artifactId>
+            <version>0.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.janusgraph</groupId>
+            <artifactId>janusgraph-hbase</artifactId>
+            <version>0.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tinkerpop</groupId>
+            <artifactId>gremlin-server</artifactId>
+            <version>3.5.3</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <resources>
             <resource>
@@ -94,6 +120,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>org.hnu.precomputation.web.PrecomputationApplication</mainClass>
+                    <mainClass>org.hnu.precomputation.service.web.PrecomputationApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
