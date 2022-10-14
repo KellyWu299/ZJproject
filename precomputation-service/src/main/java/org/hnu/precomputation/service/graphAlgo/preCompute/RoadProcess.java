@@ -1,7 +1,7 @@
 package org.hnu.precomputation.service.graphAlgo.preCompute;
 
 import org.hnu.precomputation.service.service.JanusGraphService;
-import org.hnu.precomputation.service.service.Pair;
+import org.hnu.precomputation.service.Impl.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

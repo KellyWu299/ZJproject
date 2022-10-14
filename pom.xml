@@ -12,12 +12,9 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.5.4</version>
-
 		<relativePath/> <!-- lookup parent from repository -->
-
-		<relativePath/>
-
 	</parent>
+
 	<groupId>org.hnu</groupId>
 	<artifactId>precomputation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -64,12 +61,12 @@
 		<groupId>org.janusgraph</groupId>
 		<artifactId>janusgraph-driver</artifactId>
 		<version>0.6.2</version>
-	</dependency>
-	<dependency>
-		<groupId>org.apache.tinkerpop</groupId>
-		<artifactId>gremlin-driver</artifactId>
-		<version>3.5.3</version>
-	</dependency>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tinkerpop</groupId>
+			<artifactId>gremlin-driver</artifactId>
+			<version>3.5.3</version>
+		</dependency>
 		<!--
 		<dependency>
 			<groupId>org.janusgraph</groupId>
@@ -78,27 +75,11 @@
 		</dependency>
 		-->
 
-
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>5.2.4.Final</version>
 		</dependency>
-
-	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</repository>
-
-		<repository>
-			<id>unidal.releases</id>
-			<url>http://unidal.org/nexus/content/repositories/releases/</url>
-		</repository>
-	</repositories>
-
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -120,7 +101,6 @@
 			<version>2.8.5</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -129,9 +109,16 @@
 
 	</dependencies>
 
+	<repositories>
+		<repository>
+			<id>snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
 
-	<build>
-
-	</build>
+		<repository>
+			<id>unidal.releases</id>
+			<url>http://unidal.org/nexus/content/repositories/releases/</url>
+		</repository>
+	</repositories>
 
 </project>

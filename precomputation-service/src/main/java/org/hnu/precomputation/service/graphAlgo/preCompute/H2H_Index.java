@@ -1,6 +1,6 @@
 package org.hnu.precomputation.service.graphAlgo.preCompute;
 
-import org.hnu.precomputation.service.service.Pair;
+import org.hnu.precomputation.service.Impl.Pair;
 
 import java.io.File;
 import java.io.IOException;
