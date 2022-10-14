@@ -71,7 +71,7 @@ public class NebulaGraphService {
 //            return "false";
         }
         String fileName = f.getOriginalFilename();
-        File dest = new File(new File("C:/Users/86152/Desktop/my/zj/impoter").getAbsolutePath()+ "/" + fileName);
+        File dest = new File(new File("importer").getAbsolutePath()+ "/" + fileName);
         if (!dest.getParentFile().exists()) {
             dest.getParentFile().mkdirs();
         }
@@ -99,14 +99,10 @@ public class NebulaGraphService {
         System.out.println(System.getProperty("GBK"));//显示当前语言编码
         Process p;//命令进程创建
 //        String fname=f.getName();
-        String[] cmd = new String[]{"cmd","/C","nebula-importer-windows-amd64-v3.1.0.exe","--config","C:/Users/86152/Desktop/my/zj/impoter/example.yaml"};//命令，按空格分割，windows命令行前两个cmd，/C一定要加
-        String[] cmd2 = new String[]{"cmd","/C","dir"};
-        String cmd3 = String.format("nebula-importer-windows-amd64-v3.1.0.exe --config C:/Users/86152/Desktop/my/zj/impoter/example.yaml");
-//        cmd[0] = "cd";
-//        cmd[1] = "nebula-docker-compose/";
+        String[] cmd = new String[]{"cmd","/C","nebula-importer-windows-amd64-v3.1.0.exe","--config","example.yaml"};//命令，按空格分割，windows命令行前两个cmd，/C一定要加
+
         try {
-            //执行命令，运行helloWord.class文件。
-            p = Runtime.getRuntime().exec(cmd,null,new File("C:/Users/86152/Desktop/my/zj/")) ;//后面还有俩参数，第二个一般是null，第三个是命令的文件目录，默认是java所在工程目录
+            p = Runtime.getRuntime().exec(cmd,null,new File("importer")) ;//后面还有俩参数，第二个一般是null，第三个是命令的文件目录，默认是java所在工程目录
             BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line = null;
             //把命令输出打印
@@ -118,7 +114,9 @@ public class NebulaGraphService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        dest.delete();
     }
+
 
     //返回某一数据集所有起点和终点的边集合
     public List<serviceEdge> tasksservice(String s, String SpaceName){
@@ -126,9 +124,7 @@ public class NebulaGraphService {
         nebulaTemplate.executeObject(choose);
         String s1 = String.format("LOOKUP ON %s YIELD edge AS e",s);
         NebulaResult<nebulaEdge> teamNebulaResult = nebulaTemplate.queryObject(s1, nebulaEdge.class);
-
         List<nebulaEdge> list = teamNebulaResult.getData();
-
         Iterator<nebulaEdge> iterator =list.iterator();
         List<serviceEdge> list1 = new ArrayList<>();
         while(iterator.hasNext()){
@@ -166,5 +162,11 @@ public class NebulaGraphService {
         nebulaTemplate.executeObject(ss);
 
     }
+
+
+
+
+
+
 
 }

@@ -27,16 +27,8 @@ public class DatasetService {
     public void update(Dataset dataset) {
         datasetDao.updateByPrimaryKey(dataset);
     }
-//JanusGraph
-    public void delete(Long id) {
-        datasetDao.deleteByPrimaryKey(id);
-    }
-    public List<Dataset> list(){
-        return datasetDao.selectAll();
-    }
-//Nebula
+
     public Integer delete(Long id) { return datasetDao.deleteByPrimaryKey(id); }
 
     public List<Dataset> queryAllDataset() { return datasetDao.selectAll(); }
-
 }

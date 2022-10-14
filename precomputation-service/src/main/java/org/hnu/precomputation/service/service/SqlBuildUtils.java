@@ -295,23 +295,4 @@ public class SqlBuildUtils {
             return value;
         }
 
-//        public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-//            // 测试点生成
-//            ModelAndClass modelAndClass = new ModelAndClass();
-//            modelAndClass.setId(123123123123L);
-//            modelAndClass.setName("模式");
-//            modelAndClass.setPid(132313231313123L);
-//            modelAndClass.setDescription("描述");
-//            String s = buildInsert(modelAndClass);
-//            System.out.println(s);
-//            // 测试边生成
-//            ProjectModelAndClass projectModelAndClass = new ProjectModelAndClass();
-//            projectModelAndClass.setStartId(181314024706908160L);
-//            projectModelAndClass.setEndId(123123123123L);
-//            projectModelAndClass.setLeftVid("181314024706908160");
-//            projectModelAndClass.setRightVid("123123123123");
-//            String s1 = buildEdge(projectModelAndClass);
-//            System.out.println(s1);
-//        }
-
     }

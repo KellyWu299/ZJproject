@@ -38,6 +38,10 @@ public class DatasetController {
      */
     @GetMapping("/deleteById")
     public CommonResult<Integer> deleteById(@RequestParam("id") Long id) {
+        Dataset dataset = datasetService.queryDataset(id);
+        nebulaGraphService.deleteSpace(dataset.getDescription());
+
+
         Integer temp=datasetService.delete(id);
         return CommonResult.success(temp);
     }
@@ -60,8 +64,8 @@ public class DatasetController {
         dataset.setDescription(param.getDescription());
         datasetService.addDataset(dataset);
         if(param.getSource()==1){
-//            nebulaGraphService.tasksservice("nebulaEdge","NebulaTest");
-            nebulaGraphService.OpenNebula(file, param.getDescription());
+            nebulaGraphService.OpenNebula(file, "th");
+
         }
         return CommonResult.success(dataset);
     }

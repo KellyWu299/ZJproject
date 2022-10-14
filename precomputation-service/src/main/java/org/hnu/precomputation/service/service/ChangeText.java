@@ -59,7 +59,7 @@ public class ChangeText {
     }
 
     public void change(String name) {
-        String BasefilePath = "C:/Users/86152/Desktop/my/zj/impoter/example.yaml";
+        String BasefilePath = "importer/example.yaml";
         String NewAddress = "./"+name;
         ChangeText changetext = new ChangeText();
         changetext.writeFile(BasefilePath, changetext.readFileContent(BasefilePath,NewAddress));
@@ -70,7 +70,7 @@ public class ChangeText {
     /*图空间*/
     public void ChangeSpace(String GraphName) {
 
-        Replace(GraphName,"C:/Users/86152/Desktop/my/zj/impoter/example.yaml");
+        Replace(GraphName,"importer/example.yaml");
 
     }
 

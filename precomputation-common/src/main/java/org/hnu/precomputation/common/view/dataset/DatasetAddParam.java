@@ -16,17 +16,4 @@ public class DatasetAddParam {
      * 数据集描述
      */
     private String description;
-
-    /**
-     * 属性
-     */
-    private String vertexProperty;
-
-    private String edgeProperty;
-
-    /**
-     * 任务名称
-     */
-    private String taskName;
-
 }
