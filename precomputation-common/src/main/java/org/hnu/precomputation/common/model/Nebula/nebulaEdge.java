@@ -9,20 +9,11 @@ import lombok.Data;
 public class nebulaEdge extends JSONObject {
 
     @FieldAutoMapping(method = "getAgainst" ,type = "against")
-    private String against;
+    private String weight;
 
     @FieldAutoMapping(method = "getLeftVid" ,type = "leftVid")
     private String leftVid;
 
     @FieldAutoMapping(method = "getRightVid" ,type = "rightVid")
     private String rightVid;
-
-    @Override
-    public String toString() {
-        return "nebulaEdge{" +
-                "against='" + against + '\'' +
-                ", leftVid='" + leftVid + '\'' +
-                ", rightVid='" + rightVid + '\'' +
-                '}';
-    }
 }

@@ -47,7 +47,7 @@ public class SqlBuildUtils {
 
         private static final String fetchEdgeSqlTemplate = "FETCH PROP ON %s \"%s\" -> \"%s\" YIELD properties(edge);";
 
-        private static final String createEdgeIndex = "CREATE EDGE INDEX nebulaEdge_index on %s();";
+        private static final String createEdgeIndex = "CREATE EDGE INDEX IF NOT EXISTS nebulaEdge_index on %s();";
 
         private static final String useGraphTemplate = "USE %s;";
 
