@@ -7,6 +7,10 @@ spring:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
       # 这里替换上自己的mysql服务连接信息
+//Nebula
+      url: jdbc:mysql://127.0.0.1:3306/zj?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+      username: root
+//JanusGraph
       url: jdbc:mysql://192.168.70.184:3306/zhijiang?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
       username: zhijiang
       password: 123456
@@ -26,7 +30,5 @@ mybatis:
   type-aliases-package:
   configuration:
     map-underscore-to-camel-case: true
-
-
 
 

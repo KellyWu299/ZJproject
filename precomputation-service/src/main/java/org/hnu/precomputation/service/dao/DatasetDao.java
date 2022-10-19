@@ -1,5 +1,4 @@
 package org.hnu.precomputation.service.dao;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.hnu.precomputation.common.model.dataset.Dataset;
@@ -18,5 +17,6 @@ public interface DatasetDao {
     int updateByPrimaryKey(Dataset record);
 
     @Select("SELECT * from dataset")
+
     List<Dataset> selectAll();
 }
