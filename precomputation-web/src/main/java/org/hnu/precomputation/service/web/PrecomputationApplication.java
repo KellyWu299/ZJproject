@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("org.hnu.precomputation.service.dao")
 @ComponentScan("org.hnu.precomputation.*")
 public class PrecomputationApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(PrecomputationApplication.class, args);
 	}

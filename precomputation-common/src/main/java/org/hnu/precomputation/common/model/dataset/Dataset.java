@@ -35,5 +35,9 @@ public class Dataset {
      * 任务名称
      */
     private String taskName;
+    /**
+     * janusgraph的id文件名,命名要以.txt结尾
+     */
+    private String janusIdFileName;
 
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.hnu.precomputation.service.Impl.Pair;
 import org.janusgraph.core.*;
@@ -21,6 +22,7 @@ import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -190,28 +192,32 @@ public class JanusGraphService  {
 
     //以下功能适用于批量处理
     //1,数据批量增加
-    @Async
-    public String putFile(MultipartFile file, String vertexProperty,String edgeProperty) throws Exception {
+    //putIndex和putFile一起使用,先构建索引再导入数据集
+    public void putIndex(String vertexProperty, String edgeProperty) throws Exception {
         //为新的property构建索引
-        GraphTraversalSource gTx = threadedTx.traversal();
         log.info("线程"+Thread.currentThread().getName()+"         构建索引...");
         PropertyKey V_propertyKey = mgmt.makePropertyKey(vertexProperty).dataType(Integer.class).make();
         PropertyKey E_propertyKey = mgmt.makePropertyKey(edgeProperty).dataType(Integer.class).make();
         mgmt.buildIndex(vertexProperty,Vertex.class).addKey(V_propertyKey).buildCompositeIndex();
-       mgmt.buildIndex(edgeProperty,Edge.class).addKey(E_propertyKey).buildCompositeIndex();
-       mgmt.commit();
-      log.info("构建完成");
-       this.mgmt = graph.openManagement();
-    /*   log.info("注册索引.....");
-       mgmt.updateIndex(mgmt.getGraphIndex(vertexProperty), SchemaAction.ENABLE_INDEX).get();
-        mgmt.updateIndex(mgmt.getGraphIndex(edgeProperty), SchemaAction.ENABLE_INDEX).get();
+        mgmt.buildIndex(edgeProperty,Edge.class).addKey(E_propertyKey).buildCompositeIndex();
+        mgmt.commit();
+        this.mgmt=graph.openManagement();
+        log.info("线程"+Thread.currentThread().getName()+"构建索引"+vertexProperty+"   and   "+edgeProperty+"完成");
+        this.mgmt = graph.openManagement();
+    }
 
-     */
+    public String putFile(MultipartFile file, String vertexProperty,String edgeProperty,String edgeIdFileName) throws Exception {
+        //为新的property构建索引
+        GraphTraversalSource gTx = threadedTx.traversal();
         //导入数据
         logger.info("线程"+Thread.currentThread().getName()+":         导入数据....");
-        List<Integer> list = new ArrayList<>();
+       // List<Integer> list = new ArrayList<>();
+        HashMap<Integer, Object> map = new HashMap<>();
         InputStream fis = file.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+        //新建janusgraph边id文件
+        File edgeIdFile = new File("precomputation-service/src/main/resources/janusEdgeIdFile/"+edgeIdFileName);
+        FileOutputStream fileOutputStream = new FileOutputStream(edgeIdFile);
         String s = null;
         Vertex vertexB, vertexA;
         int i = 1;
@@ -219,35 +225,65 @@ public class JanusGraphService  {
             String[] str = s.split(",");
             Integer a = Integer.parseInt(str[0]);
             Integer b = Integer.parseInt(str[1]);
-            if (list.contains(a)) {
-                vertexA = gTx.V().has(vertexProperty, a).next();
+            if (map.containsKey(a)) {
+                vertexA = gTx.V(map.get(a)).next();
             } else {
                 vertexA = gTx.addV(vertexLabel).property(vertexProperty, a).next();
-
-                list.add(a);
+                Object id = vertexA.id();
+                // list.add(a);
+                map.put(a,id);
             }
-            if (list.contains(b)) {
-                vertexB = gTx.V().has(vertexProperty,b).next();
+            if (map.containsKey(b)) {
+                vertexB = gTx.V(map.get(b)).next();
             } else {
                 vertexB =gTx.addV(vertexLabel).property(vertexProperty, b).next();
-                list.add(b);
+                Object id = vertexB.id();
+              //  list.add(b);
+                map.put(b,id);
             }
-            vertexB.addEdge(edgeLabel, vertexA,edgeProperty,1);
-           // System.out.println("vertexA:  "+vertexA+"     vertexB"  +vertexB);
+            Edge edge = vertexB.addEdge(edgeLabel, vertexA, edgeProperty, 1);
+            //将边id写入文件中
+           // String id = edge.id().toString();
+            //将顶点id写入文件中
+            String Aid = vertexA.id().toString();
+            String Bid=vertexB.id().toString();
+            String line=Aid+","+Bid+"\n";
+            byte[] bytes = line.getBytes();
+            fileOutputStream.write(bytes);
         }
-        gTx.tx().commit();
-        this.mgmt = graph.openManagement();
-     //   this.g=graph.traversal();
-
+        //关闭资源
+        fileOutputStream.close();
+        map.clear();
         return "Putting database finished";
     }
 
+    public void commit(){
+                threadedTx.tx().commit();
+                this.threadedTx=graph.tx().createThreadedTx();
+    }
+
     //2,数据批量查找
-    public ArrayList<Pair> getGraph(String vertexProperty, String edgeProperty){
+    public ArrayList<Pair> getGraph( String edgeProperty,String edgeIdFileName) throws Exception {
         logger.info("导出数据.....");
         GraphTraversalSource g = graph.traversal();
         ArrayList<Pair> arrayList = new ArrayList<>();
-        List<Edge> list = g.E().has(edgeProperty).toList();
+        //读取边id的文件,通过id取图
+        String filePath="precomputation-service/src/main/resources/janusEdgeIdFile/"+edgeIdFileName;
+        FileInputStream fis = new FileInputStream(filePath);
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+        String s=null;
+        while ((s = br.readLine()) != null) {
+            String[] str = s.split(",");
+            Integer a = Integer.parseInt(str[0]);
+            Integer b = Integer.parseInt(str[1]);
+          //  Long id1 = (Long) g.E(s).inV().next().id();
+          //  Long id2 = (Long) g.E(s).outV().next().id();
+            Pair pair = new Pair();
+            pair.vertex1=a;
+            pair.vertex2=b;
+            arrayList.add(pair);
+        }
+       /* List<Edge> list = g.E().has(edgeProperty).toList();
         Iterator<Edge> iterator = list.iterator();
         while(iterator.hasNext()){
             Edge edge=iterator.next();
@@ -258,19 +294,27 @@ public class JanusGraphService  {
             pair.vertex2=id2;
             arrayList.add(pair);
         }
+        */
         return arrayList;
 
     }
 
     //3,数据批量删除
-    public String deleteGraph(String vertexProperty,String edgeProperty){
+    public String deleteGraph(String vertexProperty,String edgeProperty,String idFileName) throws Exception {
         logger.info("删除数据集....");
-        List<Vertex> vertexList = g.V().has(vertexProperty).toList();
-        //删除数据
-        for(int i=0;i< vertexList.size();i++){
-            Vertex vertex = vertexList.get(i);
-            vertex.remove();
+        String filePath="precomputation-service/src/main/resources/janusEdgeIdFile/"+idFileName;
+        FileInputStream fis = new FileInputStream(filePath);
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+        String s=null;
+        while ((s = br.readLine()) != null) {
+            String[] str = s.split(",");
+            Integer a = Integer.parseInt(str[0]);
+            Integer b = Integer.parseInt(str[1]);
+            g.V(a).drop();
+            g.V(b).drop();
         }
+        File file = new File(filePath);
+        file.delete();
         JanusGraphIndex vertexIndex = mgmt.getGraphIndex(vertexProperty);
         JanusGraphIndex edgeIndex = mgmt.getGraphIndex(edgeProperty);
         mgmt.updateIndex(vertexIndex, SchemaAction.DISABLE_INDEX);
@@ -294,7 +338,7 @@ public class JanusGraphService  {
     }
 
     //资源释放
-@PreDestroy
+//@PreDestroy
     public void closeGraph(){
         mgmt.commit();
         g.tx().commit();
