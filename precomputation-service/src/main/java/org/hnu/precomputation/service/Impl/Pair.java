@@ -1,6 +1,6 @@
 package org.hnu.precomputation.service.Impl;
 
 public class Pair {
-    public Long vertex1;
-    public Long vertex2;
+    public Integer vertex1;
+    public Integer vertex2;
 }

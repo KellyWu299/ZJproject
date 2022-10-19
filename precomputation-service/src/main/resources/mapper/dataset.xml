@@ -11,6 +11,7 @@
         <result column="description" jdbcType="VARCHAR" property="description"/>
         <result column="vertexProperty" jdbcType="VARCHAR" property="vertexProperty"/>
         <result column="edgeProperty" jdbcType="VARCHAR" property="edgeProperty"/>
+        <result column="janusIdFileName" jdbcType="VARCHAR" property="janusIdFileName"/>
     </resultMap>
 
     <insert id="insert" parameterType="org.hnu.precomputation.common.model.dataset.Dataset"
@@ -32,6 +33,9 @@
             <if test="edgeProperty!= null">
                 edgeProperty ,
             </if>
+            <if test="janusIdFileName!= null">
+                janusIdFileName,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null">
@@ -49,6 +53,9 @@
             <if test="edgeProperty != null">
                 #{edgeProperty,jdbcType=VARCHAR},
             </if>
+            <if test="janusIdFileName != null">
+                #{janusIdFileName,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
 
@@ -59,7 +66,7 @@
     </select>
 
     <select id="selectByPrimaryKey" resultMap="Dataset" parameterType="java.lang.Long">
-        select id, name, source, description, vertexProperty,edgeProperty
+        select id, name, source, description, vertexProperty,edgeProperty,janusIdFileName
         from dataset
         where id = #{id}
     </select>
@@ -81,6 +88,9 @@
             </if>
             <if test="edgeProperty != null">
                 edgeProperty = #{edgeProperty,jdbcType=VARCHAR},
+            </if>
+            <if test="janusIdFileName != null">
+                janusIdFileName = #{janusIdFileName,jdbcType=VARCHAR},
             </if>
 
         </set>

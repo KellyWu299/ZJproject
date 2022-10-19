@@ -16,11 +16,10 @@ import java.util.Date;
 public class Task {
 
     /**
-     * 任务id type = IdType.ID_WORKER
+     * 任务id
      */
     @TableId
     private Long id;
-
     /**
      * 任务名称
      */
@@ -36,13 +35,12 @@ public class Task {
      * 3: finish(success)
      * 4: finish(fail)
      */
-
     private Integer taskStatus;
     /**
      * 任务类型
-     * 1：上传（导入）
-     * 2：下载（导出）
-     * 3:删除数据集
+     * 1：上传（导入）数据集
+     * 2：下载（导出）导出数据集
+     * 3:构建索引
      */
     private Integer taskType;
 
