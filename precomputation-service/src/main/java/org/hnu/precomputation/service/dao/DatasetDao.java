@@ -6,7 +6,7 @@ import org.hnu.precomputation.common.model.dataset.Dataset;
 import java.util.List;
 
 @Mapper
-public interface DatasetDao {
+public interface DatasetDao  {
 
     int insert(Dataset record);
 
@@ -17,6 +17,5 @@ public interface DatasetDao {
     int updateByPrimaryKey(Dataset record);
 
     @Select("SELECT * from dataset")
-
     List<Dataset> selectAll();
 }

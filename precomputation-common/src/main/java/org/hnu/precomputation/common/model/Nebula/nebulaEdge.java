@@ -16,13 +16,4 @@ public class nebulaEdge extends JSONObject {
 
     @FieldAutoMapping(method = "getRightVid" ,type = "rightVid")
     private String rightVid;
-
-    @Override
-    public String toString() {
-        return "nebulaEdge{" +
-                "against='" + against + '\'' +
-                ", leftVid='" + leftVid + '\'' +
-                ", rightVid='" + rightVid + '\'' +
-                '}';
-    }
 }

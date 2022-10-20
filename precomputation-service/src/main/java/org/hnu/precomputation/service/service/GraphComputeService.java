@@ -31,7 +31,7 @@ public class GraphComputeService {
         System.out.println("start to get graph by ID ................");
         long startTime=System.currentTimeMillis();
         Dataset dataset = datasetService.queryDataset(id);  //根据id获取图元数据
-        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getVertexProperty(), dataset.getEdgeProperty());  //获取图数据集
+        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getJanusIdFileName());  //获取图数据集
         long endTime=System.currentTimeMillis();
         System.out.println("获取图数据时间： "+(endTime-startTime)+" ms");
         Map<Object, List<Object>> mMap = GraphUtil.gFormat(g);  //格式转换
@@ -45,27 +45,27 @@ public class GraphComputeService {
         System.out.println("start to get graph by ID ................");
         long startTime = System.currentTimeMillis();
         Dataset dataset = datasetService.queryDataset(id);
-        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getVertexProperty(), dataset.getEdgeProperty());
+        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getJanusIdFileName());
         long endTime = System.currentTimeMillis();
         System.out.println("获取图数据时间： " + (endTime-startTime) + " ms");
         return g;
     }
 
-    public Map<Integer, Float> gEgoUsingBaseBSearch(Long id) {
+    public Map<Integer, Float> gEgoUsingBaseBSearch(Long id){
         ArrayList<Pair> g = gGraph(id);
         ArrayList<long[]> pairs = GraphUtil.gFormatForEgo(g);
         System.out.println("start to compute ego betweenness using basebsearch...............");
         return  baseBSearchAlgo.basebsearch(pairs);
     }
 
-    public Map<Integer, Float> gEgoUsingOptBSearch(Long id) {
+    public Map<Integer, Float> gEgoUsingOptBSearch(Long id){
         ArrayList<Pair> g = gGraph(id);
         ArrayList<long[]> pairs = GraphUtil.gFormatForEgo(g);
         System.out.println("start to compute ego betweenness using optbsearch...............");
         return optBSearchAlgo.optbsearch(pairs);
     }
 
-    public Map<Integer, Float> gEgoUsingAdjMatrix(Long id) {
+    public Map<Integer, Float> gEgoUsingAdjMatrix(Long id){
         ArrayList<Pair> g = gGraph(id);
         ArrayList<long[]> pairs = GraphUtil.gFormatForEgo(g);
         System.out.println("start to compute ego betweenness using adjacent matrix...............");

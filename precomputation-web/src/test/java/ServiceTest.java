@@ -28,7 +28,7 @@ public class ServiceTest {
     public void test() {
         long id = 135;
         Dataset dataset = datasetService.queryDataset(id);  //根据id获取图元数据
-        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getVertexProperty(), dataset.getEdgeProperty());  //获取图数据集
+        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getJanusIdFileName());  //获取图数据集
         Map<Object, List<Object>> mMap = GraphUtil.gFormat(g);  //格式转换
         System.out.println(mMap);
     }

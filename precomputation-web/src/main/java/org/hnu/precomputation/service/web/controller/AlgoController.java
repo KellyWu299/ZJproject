@@ -1,3 +1,4 @@
+
 package org.hnu.precomputation.service.web.controller;
 
 import org.hnu.precomputation.common.model.api.CommonResult;
@@ -26,6 +27,8 @@ public class AlgoController {
     @Autowired
     private DatasetService datasetService;
 
+
+
     /**
      * 根据id获取全局betweenness值
      * @param id （对应数据库表中元数据的id值）
@@ -43,7 +46,7 @@ public class AlgoController {
     @GetMapping("/queryDatasetById")
     public CommonResult<ArrayList<Pair>> queryDataset(@RequestParam("id") long id) {
         Dataset dataset = datasetService.queryDataset(id);  //根据id获取图元数据
-        ArrayList<Pair> res =  janusGraphService.getGraph(dataset.getVertexProperty(), dataset.getEdgeProperty());  //获取图数据集
+        ArrayList<Pair> res =  janusGraphService.getGraph(dataset.getJanusIdFileName());  //获取图数据集
         if (res == null) {
             return CommonResult.failed();
         }
@@ -78,3 +81,4 @@ public class AlgoController {
     }
 
 }
+

@@ -41,8 +41,6 @@ public class JanusGraphService  {
     GraphTraversalSource g;
     Graph threadedTx;
     @Autowired
-     private HttpServletRequest httpServletRequest;
-    @Autowired
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
 
@@ -263,25 +261,28 @@ public class JanusGraphService  {
     }
 
     //2,数据批量查找
-    public ArrayList<Pair> getGraph( String edgeProperty,String edgeIdFileName) throws Exception {
+    public ArrayList<Pair> getGraph(String edgeIdFileName) {
         logger.info("导出数据.....");
-        GraphTraversalSource g = graph.traversal();
         ArrayList<Pair> arrayList = new ArrayList<>();
         //读取边id的文件,通过id取图
         String filePath="precomputation-service/src/main/resources/janusEdgeIdFile/"+edgeIdFileName;
-        FileInputStream fis = new FileInputStream(filePath);
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-        String s=null;
-        while ((s = br.readLine()) != null) {
-            String[] str = s.split(",");
-            Integer a = Integer.parseInt(str[0]);
-            Integer b = Integer.parseInt(str[1]);
-          //  Long id1 = (Long) g.E(s).inV().next().id();
-          //  Long id2 = (Long) g.E(s).outV().next().id();
-            Pair pair = new Pair();
-            pair.vertex1=a;
-            pair.vertex2=b;
-            arrayList.add(pair);
+        try {
+            FileInputStream fis = new FileInputStream(filePath);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            String s=null;
+            while ((s = br.readLine()) != null) {
+                String[] str = s.split(",");
+                Integer a = Integer.parseInt(str[0]);
+                Integer b = Integer.parseInt(str[1]);
+                //  Long id1 = (Long) g.E(s).inV().next().id();
+                //  Long id2 = (Long) g.E(s).outV().next().id();
+                Pair pair = new Pair();
+                pair.vertex1=a;
+                pair.vertex2=b;
+                arrayList.add(pair);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
        /* List<Edge> list = g.E().has(edgeProperty).toList();
         Iterator<Edge> iterator = list.iterator();

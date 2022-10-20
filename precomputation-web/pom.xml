@@ -58,16 +58,16 @@
             <artifactId>maven-core</artifactId>
             <version>3.2.5</version>
         </dependency>
-
-
-    </dependencies>
-
-    <repositories>
-        <repository>
-            <id>snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>2.0.6</version>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
@@ -79,11 +79,13 @@
             <artifactId>mybatis-spring</artifactId>
             <version>2.0.7</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.janusgraph</groupId>
             <artifactId>janusgraph-driver</artifactId>
             <version>0.6.2</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.janusgraph</groupId>
             <artifactId>janusgraph-hbase</artifactId>
@@ -96,13 +98,21 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+
+
+
     <build>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
-
         <plugins>
 
             <plugin>
@@ -119,7 +129,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>org.hnu.precomputation.web.PrecomputationApplication</mainClass>
+                   <!-- <mainClass>org.hnu.precomputation.web.PrecomputationApplication</mainClass>-->
                     <mainClass>org.hnu.precomputation.service.web.PrecomputationApplication</mainClass>
                 </configuration>
                 <executions>

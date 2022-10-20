@@ -1,6 +1,4 @@
-
 package org.hnu.precomputation.service.web.controller;
-
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.SneakyThrows;
@@ -8,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.hnu.precomputation.common.model.api.CommonResult;
 import org.hnu.precomputation.common.model.dataset.Dataset;
 import org.hnu.precomputation.common.model.dataset.Task;
+import org.hnu.precomputation.common.model.Nebula.serviceEdge;
+import org.hnu.precomputation.common.model.api.NebulaResult;
 import org.hnu.precomputation.common.view.dataset.DatasetAddParam;
 import org.hnu.precomputation.service.Impl.Pair;
 import org.hnu.precomputation.service.service.DatasetService;
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -61,6 +61,7 @@ public class DatasetController {
     }
 
     //包含文件上传的post请求，需要额外的param参数
+
     @PostMapping("/addDataset")
     public CommonResult<String> addDataset(@RequestParam("file")MultipartFile[] files, @RequestPart("req") @Valid List<DatasetAddParam> params) throws Exception {
         Thread[] threads = new Thread[params.size()];
@@ -98,12 +99,17 @@ public class DatasetController {
                         Long id = task.getId();
                         if (params.get(finalI).getSource() == 1) {
                             //nebula待补充
+                            try {
+                                nebulaGraphService.OpenNebula(files[finalI],files[finalI].getName());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                         //janusgraph:
                         if (params.get(finalI).getSource() == 2) {
                             //1,构建索引
                             log.info("线程名:" + Thread.currentThread().getName() + ":janusgraph 导入数据");
-                            //2,利用构造器,将表中的deal_time和task_status进行更新
+                            //2,利用构造器,将表中的d
                             UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
                             updateWrapper.eq("id", id).set("task_status", 2).set("deal_time", new Date());
                             taskService.update(null, updateWrapper);
@@ -132,6 +138,8 @@ public class DatasetController {
         janusGraphService.commit();
         return CommonResult.success("add dataset successfully!");
     }
+
+
     // post请求，需要body作为参数
     @PostMapping("/update")
     public CommonResult<Dataset> update(@RequestBody Dataset dataset) {
@@ -151,7 +159,7 @@ public class DatasetController {
         String result=null;
         //数据集为janusgraph数据集
         if(dataset.getSource()==2){
-            result = janusGraphService.deleteGraph(dataset.getVertexProperty(), dataset.getEdgeProperty(),dataset.getJanusIdFileName());
+            result = janusGraphService.deleteGraph(dataset.getVertexProperty(), dataset.getEdgeProperty(), dataset.getJanusIdFileName());
         }
         //nebula待补充
         datasetService.delete(id);
@@ -159,28 +167,18 @@ public class DatasetController {
         return CommonResult.success(result);
     }
 
+    @SneakyThrows
     @PostMapping("getJanusGraph")
-    public CommonResult<ArrayList<Pair>> getGraph(@RequestPart("req") @Valid DatasetAddParam param) throws Exception {
-        String edgeProperty = param.getEdgeProperty();
-        String janusIdFileName = param.getJanusIdFileName();
-        ArrayList<Pair> graph = janusGraphService.getGraph(edgeProperty,janusIdFileName);
+    public CommonResult<ArrayList<Pair>> getGraph(@RequestPart("req") @Valid DatasetAddParam param){
+//        String vertexProperty = param.getVertexProperty();
+        String janusIdFileName = param.getEdgeProperty();
+        ArrayList<Pair> graph = janusGraphService.getGraph(janusIdFileName);
         return CommonResult.success(graph);
     }
-
-    /**
-     * 检验schema里的vertexLable,edgeLable,vertexProperty,edgeProperty以及
-     * 索引的构建情况和生命周期
-     * @return 整个table的schema
-     */
     @GetMapping("/printJanusGraphSchema")
     public CommonResult<String> printGraph(){
         return CommonResult.success(janusGraphService.printSchema());
     }
-
-    /**
-     *
-     * @return 返回整个table包含的顶点数量和边数量
-     */
     @GetMapping("/countJanusGraph")
     public CommonResult<String> countGraph(){
         return CommonResult.success(janusGraphService.countGraph());
@@ -192,20 +190,12 @@ public class DatasetController {
         List<Task> list = taskService.list();
         return CommonResult.success(list);
     }
-
-
-
     //每10秒打印一次
- /* @Scheduled(cron = "0/0.5 * * * * ?")
+ //   @Scheduled(cron = "0/10 * * * * ?")
 public void printTask(){
-      System.out.println(threadPoolTaskExecutor.getActiveCount());
+        System.out.println(taskService.list());
     }
-
-
-  */
 }
-
-
 
 
 

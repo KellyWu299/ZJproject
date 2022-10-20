@@ -9,7 +9,6 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="source" jdbcType="TINYINT" property="source"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
-        //JanusGraph
         <result column="vertexProperty" jdbcType="VARCHAR" property="vertexProperty"/>
         <result column="edgeProperty" jdbcType="VARCHAR" property="edgeProperty"/>
         <result column="janusIdFileName" jdbcType="VARCHAR" property="janusIdFileName"/>
@@ -59,21 +58,12 @@
             </if>
         </trim>
     </insert>
-
     <select id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete
         from dataset
         where id = #{id}
     </select>
 
-    <select id="selectAll" resultMap="Dataset" parameterType="java.lang.Long">
-        select id, name, source, description
-        from dataset
-    </select>
-    
-    <select id="selectByPrimaryKey" resultMap="Dataset" parameterType="java.lang.Long">
-        select id, name, source, description
- //JanusGraph
     <select id="selectByPrimaryKey" resultMap="Dataset" parameterType="java.lang.Long">
         select id, name, source, description, vertexProperty,edgeProperty,janusIdFileName
         from dataset
@@ -101,7 +91,9 @@
             <if test="janusIdFileName != null">
                 janusIdFileName = #{janusIdFileName,jdbcType=VARCHAR},
             </if>
+
         </set>
         where id = #{id,jdbcType=BIGINT}
-    </update>    
+    </update>
+
 </mapper>

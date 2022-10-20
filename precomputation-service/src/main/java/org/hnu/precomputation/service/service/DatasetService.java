@@ -35,8 +35,8 @@ public class DatasetService {
         return datasetDao.selectAll();
     }
 //Nebula
-    public Integer delete(Long id) { return datasetDao.deleteByPrimaryKey(id); }
+    //public Integer delete(Long id) { return datasetDao.deleteByPrimaryKey(id); }
 
-    public List<Dataset> queryAllDataset() { return datasetDao.selectAll(); }
+  //  public List<Dataset> queryAllDataset() { return datasetDao.selectAll(); }
 
 }
