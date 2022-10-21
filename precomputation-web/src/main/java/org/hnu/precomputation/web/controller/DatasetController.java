@@ -1,6 +1,6 @@
 package org.hnu.precomputation.web.controller;
 
-import org.hnu.precomputation.common.model.Nebula.serviceEdge;
+import org.hnu.precomputation.common.model.Nebula.Pair;
 import org.hnu.precomputation.common.model.api.CommonResult;
 import org.hnu.precomputation.common.model.api.NebulaResult;
 import org.hnu.precomputation.common.model.dataset.Dataset;
@@ -10,9 +10,7 @@ import org.hnu.precomputation.service.service.NebulaGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @RestController
@@ -71,7 +69,7 @@ public class DatasetController {
         }
         NebulaResult nebulaResult = nebulaGraphService.findSpace(nebulaGraphService.getGraphName(dataset.getName()));
         System.out.println(nebulaResult);
-        List<serviceEdge> list = nebulaGraphService.tasksservice(nebulaGraphService.getGraphName(dataset.getName()));
+        List<Pair> list = nebulaGraphService.GetServiceEdge(nebulaGraphService.getGraphName(dataset.getName()));
 
         System.out.println(list);
         return CommonResult.success(dataset);
