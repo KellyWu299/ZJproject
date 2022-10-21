@@ -57,11 +57,11 @@ public class GraphComputeService {
         return g;
     }
 
-    public List<serviceEdge> gGraph1(Long id) throws Exception {
+    public List<Pair> gGraph1(Long id) throws Exception {
         System.out.println("start to get graph by ID ................");
         long startTime = System.currentTimeMillis();
         Dataset dataset = datasetService.queryDataset(id);
-        List<serviceEdge> g = nebulaGraphService.tasksservice(nebulaGraphService.getGraphName(dataset.getName()));
+        List<Pair> g = nebulaGraphService.GetServiceEdge(nebulaGraphService.getGraphName(dataset.getName()));
 //        nebulaGraphService.tasksservice()
         long endTime = System.currentTimeMillis();
         System.out.println("获取图数据时间： " + (endTime-startTime) + " ms");

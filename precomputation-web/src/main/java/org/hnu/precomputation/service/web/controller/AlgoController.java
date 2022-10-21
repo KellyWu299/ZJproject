@@ -59,10 +59,10 @@ public class AlgoController {
     }
     //根据id查询数据集（仅用于测试）
     @GetMapping("/queryDatasetById1")
-    public CommonResult<List<serviceEdge>> queryDataset1(@RequestParam("id") long id) throws InterruptedException, IOErrorException {
+    public CommonResult<List<Pair>> queryDataset1(@RequestParam("id") long id) throws InterruptedException, IOErrorException {
         Dataset dataset = datasetService.queryDataset(id);  //根据id获取图元数据
 //        ArrayList<Pair> res =  janusGraphService.getGraph(dataset.getJanusIdFileName());  //获取图数据集
-        List<serviceEdge> res = nebulaGraphService.tasksservice(nebulaGraphService.getGraphName(dataset.getName()));
+        List<Pair> res = nebulaGraphService.GetServiceEdge(nebulaGraphService.getGraphName(dataset.getName()));
         if (res == null) {
             return CommonResult.failed();
         }
