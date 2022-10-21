@@ -170,9 +170,9 @@ public class DatasetController {
     @SneakyThrows
     @PostMapping("getJanusGraph")
     public CommonResult<ArrayList<Pair>> getGraph(@RequestPart("req") @Valid DatasetAddParam param){
-//        String vertexProperty = param.getVertexProperty();
-        String janusIdFileName = param.getEdgeProperty();
-        ArrayList<Pair> graph = janusGraphService.getGraph(janusIdFileName);
+        String edgeIdFileName = param.getJanusIdFileName();
+        String edgeProperty = param.getEdgeProperty();
+        ArrayList<Pair> graph = janusGraphService.getGraph(edgeProperty,edgeIdFileName);
         return CommonResult.success(graph);
     }
     @GetMapping("/printJanusGraphSchema")

@@ -17,9 +17,9 @@ public class PreComputeService {
 //    JanusGraphService janusGraphService=new JanusGraphService();
 
 
-    public void MakeIndex(String janusIdFileName) throws IOException {
+    public void MakeIndex(String edgeProperty, String janusIdFileName) throws IOException {
         H2H_Index h2H_index=new H2H_Index();
-        h2H_index.generate_H2H_Index(janusGraphService.getGraph(janusIdFileName));
+        h2H_index.generate_H2H_Index(janusGraphService.getGraph(edgeProperty ,janusIdFileName));
     }
 
     public String GetPath(){

@@ -1,5 +1,7 @@
 package org.hnu.precomputation.service.service;
 
+import com.vesoft.nebula.client.graph.exception.IOErrorException;
+import org.hnu.precomputation.common.model.Nebula.serviceEdge;
 import org.hnu.precomputation.common.model.dataset.Dataset;
 import org.hnu.precomputation.service.graphAlgo.graphCompute.BaseBetweennessCompute;
 import org.hnu.precomputation.service.graphAlgo.graphCompute.egoBetweenness.adjMatrixAlgo;
@@ -27,11 +29,14 @@ public class GraphComputeService {
     @Autowired
     private JanusGraphService janusGraphService;
 
+    @Autowired
+    private  NebulaGraphService nebulaGraphService;
+
     public Map<Object, Double> getBetweenness(Long id){
         System.out.println("start to get graph by ID ................");
         long startTime=System.currentTimeMillis();
         Dataset dataset = datasetService.queryDataset(id);  //根据id获取图元数据
-        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getJanusIdFileName());  //获取图数据集
+        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getEdgeProperty() ,dataset.getJanusIdFileName());  //获取图数据集
         long endTime=System.currentTimeMillis();
         System.out.println("获取图数据时间： "+(endTime-startTime)+" ms");
         Map<Object, List<Object>> mMap = GraphUtil.gFormat(g);  //格式转换
@@ -45,7 +50,19 @@ public class GraphComputeService {
         System.out.println("start to get graph by ID ................");
         long startTime = System.currentTimeMillis();
         Dataset dataset = datasetService.queryDataset(id);
-        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getJanusIdFileName());
+        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getEdgeProperty(),dataset.getJanusIdFileName());
+//        nebulaGraphService.tasksservice()
+        long endTime = System.currentTimeMillis();
+        System.out.println("获取图数据时间： " + (endTime-startTime) + " ms");
+        return g;
+    }
+
+    public List<serviceEdge> gGraph1(Long id) throws Exception {
+        System.out.println("start to get graph by ID ................");
+        long startTime = System.currentTimeMillis();
+        Dataset dataset = datasetService.queryDataset(id);
+        List<serviceEdge> g = nebulaGraphService.tasksservice(nebulaGraphService.getGraphName(dataset.getName()));
+//        nebulaGraphService.tasksservice()
         long endTime = System.currentTimeMillis();
         System.out.println("获取图数据时间： " + (endTime-startTime) + " ms");
         return g;

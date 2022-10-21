@@ -261,12 +261,13 @@ public class JanusGraphService  {
     }
 
     //2,数据批量查找
-    public ArrayList<Pair> getGraph(String edgeIdFileName) {
+    public ArrayList<Pair> getGraph( String edgeProperty,String edgeIdFileName){
         logger.info("导出数据.....");
+        GraphTraversalSource g = graph.traversal();
         ArrayList<Pair> arrayList = new ArrayList<>();
         //读取边id的文件,通过id取图
-        String filePath="precomputation-service/src/main/resources/janusEdgeIdFile/"+edgeIdFileName;
         try {
+            String filePath="precomputation-service/src/main/resources/janusEdgeIdFile/"+edgeIdFileName;
             FileInputStream fis = new FileInputStream(filePath);
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
             String s=null;
@@ -284,18 +285,18 @@ public class JanusGraphService  {
         }catch (Exception e){
             e.printStackTrace();
         }
-       /* List<Edge> list = g.E().has(edgeProperty).toList();
-        Iterator<Edge> iterator = list.iterator();
-        while(iterator.hasNext()){
-            Edge edge=iterator.next();
-            Long id1 = (Long) edge.inVertex().id();
-            Long id2 =(Long) edge.outVertex().id();
-            Pair pair = new Pair();
-            pair.vertex1=id1;
-            pair.vertex2=id2;
-            arrayList.add(pair);
-        }
-        */
+   /* List<Edge> list = g.E().has(edgeProperty).toList();
+    Iterator<Edge> iterator = list.iterator();
+    while(iterator.hasNext()){
+        Edge edge=iterator.next();
+        Long id1 = (Long) edge.inVertex().id();
+        Long id2 =(Long) edge.outVertex().id();
+        Pair pair = new Pair();
+        pair.vertex1=id1;
+        pair.vertex2=id2;
+        arrayList.add(pair);
+    }
+    */
         return arrayList;
 
     }
