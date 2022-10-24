@@ -115,6 +115,7 @@ public class NebulaGraphService {
             System.out.println("add source failed");
 
         }
+        upServer.execute("cd /home/hnu/zcl && sudo -S rm -f "+fileName);
         dest.delete();
     }
     //返回某一数据集所有起点和终点的边集合

@@ -67,7 +67,7 @@ public class DatasetController {
         Thread[] threads = new Thread[params.size()];
         for (int i = 0; i < files.length && i < params.size(); i++) {
             int finalI = i;
-            janusGraphService.putIndex(params.get(finalI).getVertexProperty(), params.get(finalI).getEdgeProperty());
+           // janusGraphService.putIndex(params.get(finalI).getVertexProperty(), params.get(finalI).getEdgeProperty());
             threads[i] = new Thread(new Runnable() {
                 @SneakyThrows
                 @Override
@@ -99,12 +99,20 @@ public class DatasetController {
                         Long id = task.getId();
                         if (params.get(finalI).getSource() == 1) {
                             //nebula待补充
+
+                                UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
+                                updateWrapper.eq("id", id).set("task_status", 1).set("deal_time", new Date());
+                                taskService.update(null, updateWrapper);
                             try {
                                 nebulaGraphService.OpenNebula(files[finalI],files[finalI].getName());
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+
+                            updateWrapper.eq("id", id).set("task_status", 3).set("finish_time", new Date());
+                            taskService.update(null, updateWrapper);
                         }
+
                         //janusgraph:
                         if (params.get(finalI).getSource() == 2) {
                             //1,构建索引
