@@ -67,7 +67,7 @@ public class DatasetController {
         Thread[] threads = new Thread[params.size()];
         for (int i = 0; i < files.length && i < params.size(); i++) {
             int finalI = i;
-           // janusGraphService.putIndex(params.get(finalI).getVertexProperty(), params.get(finalI).getEdgeProperty());
+
             threads[i] = new Thread(new Runnable() {
                 @SneakyThrows
                 @Override
@@ -116,6 +116,11 @@ public class DatasetController {
                         //janusgraph:
                         if (params.get(finalI).getSource() == 2) {
                             //1,构建索引
+                            try {
+                                janusGraphService.putIndex(params.get(finalI).getVertexProperty(), params.get(finalI).getEdgeProperty());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             log.info("线程名:" + Thread.currentThread().getName() + ":janusgraph 导入数据");
                             //2,利用构造器,将表中的d
                             UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
