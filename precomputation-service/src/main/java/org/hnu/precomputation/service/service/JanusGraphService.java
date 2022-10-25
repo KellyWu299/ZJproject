@@ -243,9 +243,9 @@ public class JanusGraphService  {
             //将边id写入文件中
            // String id = edge.id().toString();
             //将顶点id写入文件中
-            String Aid = vertexA.id().toString();
-            String Bid=vertexB.id().toString();
-            String line=Aid+","+Bid+"\n";
+           // String Aid = vertexA.id().toString();
+           // String Bid=vertexB.id().toString();
+            String line=a+","+b+"\n";
             byte[] bytes = line.getBytes();
             fileOutputStream.write(bytes);
         }

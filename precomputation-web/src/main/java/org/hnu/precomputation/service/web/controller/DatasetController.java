@@ -67,7 +67,9 @@ public class DatasetController {
         Thread[] threads = new Thread[params.size()];
         for (int i = 0; i < files.length && i < params.size(); i++) {
             int finalI = i;
-
+            if(params.get(finalI).getSource() == 2){
+                janusGraphService.putIndex(params.get(finalI).getVertexProperty(), params.get(finalI).getEdgeProperty());
+            }
             threads[i] = new Thread(new Runnable() {
                 @SneakyThrows
                 @Override
