@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.hnu.precomputation.service.Impl.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
+
+import java.util.*;
 
 @Service
 public class GraphComputeService {
@@ -87,5 +87,45 @@ public class GraphComputeService {
         ArrayList<long[]> pairs = GraphUtil.gFormatForEgo(g);
         System.out.println("start to compute ego betweenness using adjacent matrix...............");
         return adjMatrixAlgo.adjMatrix(pairs);
+    }
+
+    public long calSize(Long id) {
+        long vertexNum = 0;
+        long edgeNum = 0;
+        Set<Long> vertexSet = new HashSet<>();
+        ArrayList<Pair> g = gGraph(id);
+        edgeNum = g.size();
+        for (Pair pair : g) {
+            long v1 = pair.vertex1;
+            long v2 = pair.vertex2;
+            vertexSet.add(v1);
+            vertexSet.add(v2);
+        }
+        vertexNum = vertexSet.size();
+        return vertexNum + edgeNum;
+    }
+
+    public Map<Integer, Float> gEgoRes(Long id) {
+        long datasetSize = calSize(id);
+        Map<Integer, Float> allRes = new HashMap<>();
+        Map<Integer, Float> res = new HashMap<>();
+        if (datasetSize < 1000) {
+            allRes =  gEgoUsingAdjMatrix(id);
+        } else {
+            allRes = gEgoUsingOptBSearch(id);
+        }
+
+        List<Map.Entry<Integer, Float>> list = new ArrayList<Entry<Integer, Float>>(allRes.entrySet());
+        Collections.sort(list,new Comparator<Map.Entry<Integer, Float>>() {
+            //降序排序
+            public int compare(Entry<Integer, Float> o1, Entry<Integer, Float> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
+
+        for (int i = 0; i < 0.05 * allRes.size(); i ++) {
+            res.put(i, allRes.get(i));
+        }
+        return res;
     }
 }
