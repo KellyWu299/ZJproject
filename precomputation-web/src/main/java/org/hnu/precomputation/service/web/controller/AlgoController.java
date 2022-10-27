@@ -11,15 +11,13 @@ import org.hnu.precomputation.service.service.JanusGraphService;
 import org.hnu.precomputation.service.Impl.Pair;
 import org.hnu.precomputation.service.service.NebulaGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/algo")
 public class AlgoController {

@@ -20,16 +20,16 @@ public class OperateTxt {
         bufferedWriter.close();
     }
 
-    static Map<Integer,Index> ReadIndex(String Path) throws IOException {
+    static Map<Integer, entity_Index> ReadIndex(String Path) throws IOException {
         BufferedReader bufferedReader=new BufferedReader(new FileReader(Path));
-        Map<Integer,Index> map=new HashMap<>();
+        Map<Integer, entity_Index> map=new HashMap<>();
         String s=null;
         Integer id;
 
         while((s = bufferedReader.readLine())!=null){
             String[] date=s.split(" ");
             id=Integer.valueOf(date[0]);
-            Index index =new Index();
+            entity_Index index =new entity_Index();
             index.code=date[1];
             index.pos=StringToIntArray(date[2]);
             index.dis=StringToDoubleArray(date[3]);
@@ -55,7 +55,7 @@ public class OperateTxt {
 
     public static void main(String[] args) throws IOException {
         Long StartTime=System.currentTimeMillis();
-        Map<Integer,Index> map=ReadIndex("D:\\IDEA_content\\ShortestDistanceTest\\Paths\\Txt\\haha.txt");
+        Map<Integer, entity_Index> map=ReadIndex("D:\\IDEA_content\\ShortestDistanceTest\\Paths\\Txt\\haha.txt");
         Long EndTime=System.currentTimeMillis();
         System.out.println(EndTime-StartTime);
     }

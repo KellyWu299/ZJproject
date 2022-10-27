@@ -1,6 +1,9 @@
 server:
   port: 8199
 
+  servlet:
+    context-path: /algo
+
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -8,6 +11,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       # 这里替换上自己的mysql服务连接信息
       url: jdbc:mysql://192.168.70.184:3306/zhijiang?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+#      url: jdbc:mysql://localhost:3306/mybates_test?characterEncoding=utf-8&serverTimezone=Asia/test
       username: zhijiang
       password: 123456
       initial-size: 10

@@ -14,8 +14,6 @@ public class PreComputeService {
     private final static Logger logger = LoggerFactory.getLogger("PreComputeService");
     @Autowired
     private JanusGraphService janusGraphService;
-//    JanusGraphService janusGraphService=new JanusGraphService();
-
 
     public void MakeIndex(String edgeProperty, String janusIdFileName) throws IOException {
         H2H_Index h2H_index=new H2H_Index();

@@ -3,7 +3,6 @@ package org.hnu.precomputation.service.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.sun.javafx.binding.StringFormatter;
 import com.vesoft.nebula.client.graph.exception.IOErrorException;
 import com.vesoft.nebula.client.graph.net.Session;
 import lombok.extern.slf4j.Slf4j;
