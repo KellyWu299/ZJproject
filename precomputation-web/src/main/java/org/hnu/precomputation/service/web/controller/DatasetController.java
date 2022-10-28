@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,6 +68,7 @@ public class DatasetController {
         Thread[] threads = new Thread[params.size()];
         for (int i = 0; i < files.length && i < params.size(); i++) {
             int finalI = i;
+            InputStream inputStream = files[finalI].getInputStream();
             if(params.get(finalI).getSource() == 2){
                 janusGraphService.putIndex(params.get(finalI).getVertexProperty(), params.get(finalI).getEdgeProperty());
             }
@@ -106,7 +108,7 @@ public class DatasetController {
                                 updateWrapper.eq("id", id).set("task_status", 1).set("deal_time", new Date());
                                 taskService.update(null, updateWrapper);
                             try {
-                                nebulaGraphService.OpenNebula(files[finalI],files[finalI].getName());
+                                nebulaGraphService.OpenNebula(files[finalI]);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -177,8 +179,11 @@ public class DatasetController {
             result = janusGraphService.deleteGraph(dataset.getVertexProperty(), dataset.getEdgeProperty(), dataset.getJanusIdFileName());
         }
         //nebula待补充
-        datasetService.delete(id);
+        if(dataset.getSource() == 1){
+            result = nebulaGraphService.deleteSpace(dataset.getName());
 
+        }
+        datasetService.delete(id);
         return CommonResult.success(result);
     }
 

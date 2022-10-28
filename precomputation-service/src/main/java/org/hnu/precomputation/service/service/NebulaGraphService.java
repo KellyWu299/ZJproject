@@ -10,7 +10,6 @@ import com.vesoft.nebula.client.graph.net.Session;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.A;
 import org.hnu.precomputation.common.model.Nebula.*;
-//import org.hnu.precomputation.common.model.Nebula.*;
 import org.hnu.precomputation.service.Impl.Pair;
 import org.hnu.precomputation.common.model.api.NebulaResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,13 +74,13 @@ public class NebulaGraphService {
         return stringBuffer.toString();
     }
     //将上传的数据集文件报存到本地并且调用命令行启动importer导入数据集
-    public void OpenNebula(MultipartFile f, String GraphName) throws Exception {
+    public void OpenNebula(MultipartFile f) throws Exception {
         //报存上传的文件
         if (f.isEmpty()) {
 //            return "false";
         }
         String fileName = f.getOriginalFilename();
-        File dest = new File(new File("importer").getAbsolutePath()+ "/" + fileName);
+        File dest = new File(new File("precomputation-service/src/main/resources/NebulaEdgeFile").getAbsolutePath()+ "/" + fileName);
         if (!dest.getParentFile().exists()) {
             dest.getParentFile().mkdirs();
         }
@@ -95,16 +94,15 @@ public class NebulaGraphService {
 
         //修改配置文件
         ChangeText changeText = new ChangeText();
-
-        String name = getGraphName(GraphName);
         changeText.change(fileName);
-        changeText.ChangeSpace(getGraphName(GraphName));
+        changeText.ChangeSpace(getGraphName(fileName));
         UpServer upServer = new UpServer();
         upServer.Up(fileName);
         upServer.Up("example.yaml");
 
         //控制台调用importer
 //        upServer.excuteReturnString("cd /home/hnu/zcl");
+        log.info("导入开始");
         boolean b = upServer.execute("cd /home/hnu/zcl && sudo -S ./nebula-importer-linux-amd64-v3.2.0 --config "+"example.yaml");
         if(b){
             System.out.println("add source success");
@@ -114,41 +112,31 @@ public class NebulaGraphService {
 
         }
         upServer.execute("cd /home/hnu/zcl && sudo -S rm -f "+fileName);
-        dest.delete();
+        log.info("导入结束");
     }
     //返回某一数据集所有起点和终点的边集合
-    public List<Pair> GetServiceEdge(String SpaceName) throws IOErrorException, InterruptedException {
-        String choose = sqlBuildUtils.chooseGraph(SpaceName);
-        String cI = sqlBuildUtils.createEIndex("nebulaEdge");
-        NebulaResult nebulaResult1 = nebulaTemplate.executeObject(choose+cI);
-        System.out.println(nebulaResult1);
-        Thread.currentThread().sleep(20000);
-        NebulaResult nebulaResult2 = nebulaTemplate.executeObject(choose+"REBUILD EDGE INDEX nebulaEdge_index");
-        System.out.println(nebulaResult2);
-        Thread.currentThread().sleep(20000);
-        String s1 = String.format("LOOKUP ON %s YIELD edge AS e","nebulaEdge");
-        NebulaResult<Pair> teamNebulaResult = nebulaTemplate.queryObject(choose+s1, Pair.class);
-        List<Pair> list = teamNebulaResult.getData();
-        Iterator<Pair> iterator =list.iterator();
-        List<Pair> list1 = new ArrayList<>();
-        while(iterator.hasNext()){
-            String its = String.valueOf(iterator.next());
-            JSONObject jsonObject = JSON.parseObject(its);
-            JSONObject jsonObject1 = (JSONObject) jsonObject.get("e");
-            //System.out.println(jsonObject.get("e"));
-            String r = (String)jsonObject1.get("rightVid");
-            String l = (String) jsonObject1.get("leftVid");
-            Integer rr = Integer.valueOf(r);
-            Integer ll = Integer.valueOf(l);
-            Pair pair =new Pair();
-            pair.setVertex1(rr);
-            pair.setVertex2(ll);
-            list1.add(pair);
+    public List<Pair> GetServiceEdge(String fileName) throws IOErrorException, InterruptedException {
+        List<Pair> list = new ArrayList<>();
+        try {
+            String filePath="precomputation-service/src/main/resources/NebulaEdgeFile/"+fileName;
+            FileInputStream fis = new FileInputStream(filePath);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            String s=null;
+            while ((s = br.readLine()) != null) {
+                String[] str = s.split(",");
+                Integer a = Integer.parseInt(str[0]);
+                Integer b = Integer.parseInt(str[1]);
+                //  Long id1 = (Long) g.E(s).inV().next().id();
+                //  Long id2 = (Long) g.E(s).outV().next().id();
+                Pair pair = new Pair();
+                pair.vertex1=a;
+                pair.vertex2=b;
+                list.add(pair);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        System.out.println(list1);
-        return list1;
-
-
+        return list;
     }
     //查找数据集并返回具体信息
     public NebulaResult findSpace(String s){
@@ -157,10 +145,12 @@ public class NebulaGraphService {
         return nebulaResult;
     }
     //删除数据集
-    public void deleteSpace(String s){
-        String ss = String.format("DROP SPACE [IF EXISTS] %s",s);
+    public String deleteSpace(String fileName){
+        String ss = String.format("DROP SPACE [IF EXISTS] %s",getGraphName(fileName));
         nebulaTemplate.executeObject(ss);
-
+        File file = new File("precomputation-service/src/main/resources/NebulaEdgeFile"+"/"+fileName);
+        file.delete();
+        return "delete successfully!";
     }
 
 

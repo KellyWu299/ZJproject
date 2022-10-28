@@ -61,8 +61,7 @@ public class GraphComputeService {
         System.out.println("start to get graph by ID ................");
         long startTime = System.currentTimeMillis();
         Dataset dataset = datasetService.queryDataset(id);
-        List<Pair> g = nebulaGraphService.GetServiceEdge(nebulaGraphService.getGraphName(dataset.getName()));
-//        nebulaGraphService.tasksservice()
+        List<Pair> g = nebulaGraphService.GetServiceEdge(dataset.getName());
         long endTime = System.currentTimeMillis();
         System.out.println("获取图数据时间： " + (endTime-startTime) + " ms");
         return g;

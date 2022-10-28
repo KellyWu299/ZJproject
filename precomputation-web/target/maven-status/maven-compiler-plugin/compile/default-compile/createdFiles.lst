@@ -1,4 +1,6 @@
+com\qiehua\config\MyConfigurer.class
 org\hnu\precomputation\service\web\PrecomputationApplication.class
 org\hnu\precomputation\service\web\controller\DatasetController$1.class
 org\hnu\precomputation\service\web\controller\DatasetController.class
+org\hnu\precomputation\service\web\controller\IndexController.class
 org\hnu\precomputation\service\web\controller\AlgoController.class

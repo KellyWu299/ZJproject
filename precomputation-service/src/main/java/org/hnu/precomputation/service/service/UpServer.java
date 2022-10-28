@@ -82,7 +82,7 @@ public class UpServer {
 //            sshUtil.close();
 //            System.out.println("文件下载完成");
             con();
-            upLoad("importer/"+name,"/home/hnu/zcl");
+            upLoad("precomputation-service/src/main/resources/NebulaEdgeFile/"+name,"/home/hnu/zcl");
             close();
             System.out.println("文件上传完成");
 
@@ -183,6 +183,7 @@ public class UpServer {
         return false;
     }
 }
+
 
 
 

@@ -59,7 +59,7 @@ public class ChangeText {
     }
 
     public void change(String name) {
-        String BasefilePath = "C:/Users/86152/Desktop/my/zj/impoter/example.yaml";
+        String BasefilePath = "precomputation-service/src/main/resources/NebulaEdgeFile/example.yaml";
         String NewAddress = "./"+name;
         ChangeText changetext = new ChangeText();
         changetext.writeFile(BasefilePath, changetext.readFileContent(BasefilePath,NewAddress));
@@ -70,7 +70,7 @@ public class ChangeText {
     /*图空间*/
     public void ChangeSpace(String GraphName) {
 
-        Replace(GraphName,"C:/Users/86152/Desktop/my/zj/impoter/example.yaml");
+        Replace(GraphName,"precomputation-service/src/main/resources/NebulaEdgeFile/example.yaml");
 
     }
 
@@ -97,12 +97,12 @@ public class ChangeText {
                 }
                 strings.add(s);//将数据存入集合
             }
-                BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-                for (String string : strings) {
-                    bw.write(string);//一行一行写入数据
-                    bw.newLine();//换行
-                }
-                bw.close();
+            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+            for (String string : strings) {
+                bw.write(string);//一行一行写入数据
+                bw.newLine();//换行
+            }
+            bw.close();
 
         }catch (Exception e){
             System.out.println(e);
