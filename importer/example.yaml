@@ -1,0 +1,73 @@
+version: v3
+description: example
+removeTempFiles: false
+clientSettings:
+  retry: 3
+  concurrency: 10
+  channelBufferSize: 1024
+  space: Nebula1000000_csv
+  connection:
+    user: root
+    password: 123456
+    address: 127.0.0.1:9669
+  postStart:
+    commands: |
+      DROP SPACE IF EXISTS Nebula1000000_csv;
+      CREATE SPACE IF NOT EXISTS Nebula1000000_csv (vid_type=FIXED_STRING(30));
+      USE Nebula1000000_csv;
+      CREATE TAG NebulaVertex(id string);
+      CREATE EDGE nebulaEdge(weights string, leftVid string, rightVid string);
+    afterPeriod: 8s
+  preStop:
+    commands: |
+      USE Nebula1000000_csv;
+logPath: ./err/1.log
+files:
+  - path: ./1000000.csv
+    batchSize: 4096
+    inOrder: false
+    type: csv
+    csv:
+      withHeader: false
+      withLabel: false
+      delimiter: ","
+    schema:
+      type: edge
+      edge:
+        name: nebulaEdge
+        withRanking: false
+        srcVID:
+          index: 0
+        dstVID:
+          index: 1
+        props:
+          - name: weights
+            type: string
+            index: 0
+          - name: leftVid
+            type: string
+            index: 0
+          - name: rightVid
+            type: string
+            index: 1
+  - path: ./1000000.csv
+    failDataPath: ./err/course.csv
+    batchSize: 4096
+    inOrder: false
+    type: csv
+    csv:
+      withHeader: false
+      withLabel: false
+      delimiter: ","
+    schema:
+      type: vertex
+      vertex:
+        vid:
+          type: string
+          index: 0
+        tags:
+          - name: NebulaVertex
+            props:
+            - name: id
+              type: string
+              index: 0
