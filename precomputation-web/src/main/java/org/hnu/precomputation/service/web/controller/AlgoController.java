@@ -70,7 +70,7 @@ public class AlgoController {
     }
 
     @GetMapping("/computeEgoByIdUsingBaseBSearch")
-    public CommonResult<Map<Integer, Float>> computeEgoByIdUsingBaseBSearch(@RequestParam("id") long id) {
+    public CommonResult<Map<Integer, Float>> computeEgoByIdUsingBaseBSearch(@RequestParam("id") long id) throws Exception {
         Map<Integer, Float> res =  graphComputeService.gEgoUsingBaseBSearch(id);
         if (res == null) {
             return CommonResult.failed();
@@ -78,7 +78,7 @@ public class AlgoController {
         return CommonResult.success(res);
     }
     @GetMapping("/computeEgoByIdUsingOptBSearch")
-    public CommonResult<Map<Integer, Float>> computeEgoByIdUsingOptBSearch(@RequestParam("id") long id) {
+    public CommonResult<Map<Integer, Float>> computeEgoByIdUsingOptBSearch(@RequestParam("id") long id) throws Exception {
         Map<Integer, Float> res =  graphComputeService.gEgoUsingOptBSearch(id);
         if (res == null) {
             return CommonResult.failed();
@@ -87,7 +87,7 @@ public class AlgoController {
     }
 
     @GetMapping("/computeEgoByIdUsingAdjMatrix")
-    public CommonResult<Map<Integer, Float>> computeEgoByIdUsingAdjMatrix(@RequestParam("id") long id) {
+    public CommonResult<Map<Integer, Float>> computeEgoByIdUsingAdjMatrix(@RequestParam("id") long id) throws Exception {
         Map<Integer, Float> res =  graphComputeService.gEgoUsingAdjMatrix(id);
         if (res == null) {
             return CommonResult.failed();
@@ -96,7 +96,7 @@ public class AlgoController {
     }
 
     @GetMapping("/computeEgoById")
-    public CommonResult<Map<Integer, Float>> computeEgoById(@RequestParam("id") long id) {
+    public CommonResult<Map<Integer, Float>> computeEgoById(@RequestParam("id") long id) throws Exception {
         Map<Integer, Float> res =  graphComputeService.gEgoRes(id);
         if (res == null) {
             return CommonResult.failed();

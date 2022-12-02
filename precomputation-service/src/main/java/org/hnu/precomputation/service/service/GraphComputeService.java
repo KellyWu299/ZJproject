@@ -37,11 +37,11 @@ public class GraphComputeService {
         long startTime=System.currentTimeMillis();
         Dataset dataset = datasetService.queryDataset(id);  //根据id获取图元数据
         ArrayList<Pair> g = new ArrayList<>();
-        if(dataset.getSource()==2) {
-             g = janusGraphService.getGraph(dataset.getEdgeProperty(), dataset.getJanusIdFileName());  //获取图数据集
-        }
         if(dataset.getSource()==1){
             g = (ArrayList<Pair>) nebulaGraphService.GetServiceEdge(dataset.getName());
+        }
+        if(dataset.getSource()==2) {
+             g = janusGraphService.getGraph(dataset.getEdgeProperty(), dataset.getJanusIdFileName());  //获取图数据集
         }
         long endTime=System.currentTimeMillis();
         System.out.println("获取图数据时间： "+(endTime-startTime)+" ms");
@@ -52,11 +52,18 @@ public class GraphComputeService {
         return  baseBetweennessCompute.getBetweennessMap();
     }
 
-    public ArrayList<Pair> gGraph(Long id) {
+    public ArrayList<Pair> gGraph(Long id) throws Exception {
         System.out.println("start to get graph by ID ................");
         long startTime = System.currentTimeMillis();
         Dataset dataset = datasetService.queryDataset(id);
-        ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getEdgeProperty(),dataset.getJanusIdFileName());
+        ArrayList<Pair> g = new ArrayList<>();
+        if(dataset.getSource()==1){
+            g = (ArrayList<Pair>) nebulaGraphService.GetServiceEdge(dataset.getName());
+        }
+        if(dataset.getSource()==2) {
+            g = janusGraphService.getGraph(dataset.getEdgeProperty(), dataset.getJanusIdFileName());  //获取图数据集
+        }
+       // ArrayList<Pair> g =  janusGraphService.getGraph(dataset.getEdgeProperty(),dataset.getJanusIdFileName());
 //        nebulaGraphService.tasksservice()
         long endTime = System.currentTimeMillis();
         System.out.println("获取图数据时间： " + (endTime-startTime) + " ms");
@@ -73,28 +80,28 @@ public class GraphComputeService {
         return g;
     }
 
-    public Map<Integer, Float> gEgoUsingBaseBSearch(Long id){
+    public Map<Integer, Float> gEgoUsingBaseBSearch(Long id) throws Exception {
         ArrayList<Pair> g = gGraph(id);
         ArrayList<long[]> pairs = GraphUtil.gFormatForEgo(g);
         System.out.println("start to compute ego betweenness using basebsearch...............");
         return  baseBSearchAlgo.basebsearch(pairs);
     }
 
-    public Map<Integer, Float> gEgoUsingOptBSearch(Long id){
+    public Map<Integer, Float> gEgoUsingOptBSearch(Long id) throws Exception {
         ArrayList<Pair> g = gGraph(id);
         ArrayList<long[]> pairs = GraphUtil.gFormatForEgo(g);
         System.out.println("start to compute ego betweenness using optbsearch...............");
         return optBSearchAlgo.optbsearch(pairs);
     }
 
-    public Map<Integer, Float> gEgoUsingAdjMatrix(Long id){
+    public Map<Integer, Float> gEgoUsingAdjMatrix(Long id) throws Exception {
         ArrayList<Pair> g = gGraph(id);
         ArrayList<long[]> pairs = GraphUtil.gFormatForEgo(g);
         System.out.println("start to compute ego betweenness using adjacent matrix...............");
         return adjMatrixAlgo.adjMatrix(pairs);
     }
 
-    public long calSize(Long id) {
+    public long calSize(Long id) throws Exception {
         long vertexNum = 0;
         long edgeNum = 0;
         Set<Long> vertexSet = new HashSet<>();
@@ -110,7 +117,7 @@ public class GraphComputeService {
         return vertexNum + edgeNum;
     }
 
-    public Map<Integer, Float> gEgoRes(Long id) {
+    public Map<Integer, Float> gEgoRes(Long id) throws Exception {
         long datasetSize = calSize(id);
         Map<Integer, Float> allRes = new HashMap<>();
         Map<Integer, Float> res = new HashMap<>();

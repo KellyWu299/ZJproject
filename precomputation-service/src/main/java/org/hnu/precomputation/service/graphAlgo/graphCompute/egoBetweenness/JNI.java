@@ -9,6 +9,6 @@ public class JNI {
     public native Map<Integer, Float> callOptBSearch(ArrayList<long[]> values);
 
     static{
-        System.loadLibrary("egoBetweennessDLL");
+        System.loadLibrary("egodll");
     }
 }
