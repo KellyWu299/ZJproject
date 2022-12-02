@@ -99,7 +99,7 @@
             .searchbtn{
                 position: absolute;
                 top: 20%;
-                left: 62%;
+                left: 65%;
             }
 
             .clearbtn{

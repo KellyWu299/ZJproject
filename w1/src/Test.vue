@@ -15,6 +15,11 @@ const searchToGraph = ref(null);
 const sendSearch = (val) => {
   searchToGraph.value.Receive(val);
 };
+
+// const searchToGraph = ref(null);
+const Sendgid = (val) => {
+  searchToGraph.value.ReceiveGraphid(val);
+};
 </script>
  
 <template>
@@ -22,7 +27,8 @@ const sendSearch = (val) => {
   <OneSon @sonDataName="getSonData"></OneSon>
   <AnotherSon ref="anotherSon"></AnotherSon> -->
   <TB2 @searchNode="sendSearch"></TB2>
-  <SideBar></SideBar>
+  <SideBar @sendgid="Sendgid"></SideBar>
+  <!-- <G2 ref="searchToGraph Rgid"></G2> -->
   <G2 ref="searchToGraph"></G2>
 </template>
  

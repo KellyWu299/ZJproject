@@ -12,20 +12,41 @@
             </li>
         </ul>
 
-        <div id="readme" v-if="data.showreadme">asdugasdi</div>
+        <div id="readme" class="tanchuang" v-if="data.showreadme">用户手册
+          <button @click="item4">关闭</button>
+        </div>
+        <div id="tools" class="tanchuang" v-if="data.showtools">设置
+          <button @click="item5">关闭</button>
+        </div>
     </div>
   </template>
   
 
   <script setup>
-  import { reactive, defineExpose ,watch} from "vue";
+  //import { monitorEventLoopDelay } from "perf_hooks";
+
+import { reactive, defineEmits ,ref,watch} from "vue";
+import { showFooter } from "../settings";
       
+
+
 
     var ifshow = true;
     const data = reactive({
-      showreadme : false
-
+      showreadme : false,
+      showtools :false,
+      color:"red",
+      graphid:0  
     })
+    
+    const emit = defineEmits(["sendgid"]);
+    const changegid = (val)=>{
+      data.graphid=val;
+        console.log("changeid:",data.graphid);
+        emit("sendgid", data.graphid);  
+        console.log("changeid2:",data.graphid);
+    }
+
     const bars = [
         {title:'图计算',method:'item1'},
         {title:'Nebula Graph',method:'item2'},
@@ -45,15 +66,18 @@
           case 4:item4()
           break
           case 5:item5()
+          break
         }}
     const item1=()=>{
       console.log("I am item1's method")
     }
     const item2 =()=>{
       console.log("I am item2's method")
+      changegid(0);
     }
     const item3 = ()=>{
       console.log("I am item3's method")
+      changegid(1);
     }
     const item4 = ()=>{
       console.log("I am item4's method")
@@ -62,6 +86,7 @@
     }
     const item5 = ()=>{
       console.log("I am item5's method")
+      data.showtools=!data.showtools;
     }
 
 
@@ -106,7 +131,7 @@
         height: 70px;
         width: 110%;
         line-height: 70px;
-        border-bottom: solid 1px black;
+        border-bottom: solid 1px rgb(175, 175, 175);
         padding-left: 10%;
         font-size: large;
         pointer-events:all;
@@ -142,13 +167,13 @@
         overflow:scroll;
     }
 
-    #readme{
+    .tanchuang{
       position: fixed;
-        top: 200px;
+        top: 150px;
         left: 50%;
-        margin-left: -200px;
-        height: 400px;
-        width: 400px;
+        margin-left: -300px;
+        height: 500px;
+        width: 600px;
         background-color: aquamarine;
     }
   </style> 

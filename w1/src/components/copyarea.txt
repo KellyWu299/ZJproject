@@ -1,18 +1,8 @@
 <template>
     <div id="graphScreen">
-      <p v-if="data.graphid">JanusGraph数据集id:</p>
-      <p v-else>NebulaGraph数据集id:</p>
+      <p v-if="data.graphid">JanusGraph</p>
+      <p v-else>NebulaGraph</p>
       <input v-model="data.tableid" type="text" placeholder=" 请输入想要查询的数据集id">
-
-      <!-- <p ></p> -->
-      <input v-model="data.pointid" type="text" placeholder=" 查询中心性">
-      <p v-if="data.pointid">{{CenterNodes.center[data.pointid]}}</p>
-
-      <div class="showcenter">
-        <div  v-for="(item,index) in CenterNodes.center">
-          {{item.node}} : {{item.centers}}
-        </div>
-      </div>
       <!-- <input type="text" name="" id=""> -->
       <!-- <p>{{data.search}}</p> -->
       <!-- <button @click="RecieveData">我长这么长我就不信我接收</button> -->
@@ -53,8 +43,6 @@
     
     var centerCount = []
 
-    var centerMap = new Map()
-
 
 
     // const getData1  = () =>{
@@ -78,8 +66,7 @@
     const data = reactive({
         search:"sno",
         graphid :0,
-        tableid :"",
-        pointid:0
+        tableid :"385"
     })
     const Receive = (val) => {
       console.log("serach:",data.search)
@@ -95,9 +82,8 @@
     var i =1;
 
     
-    const CenterNodes = reactive({
-        node:[],
-        center:[]
+    const nodes = reactive({
+        node:[]
     })
 
     const unique = (arr)=>{
@@ -123,15 +109,13 @@
 
 
     const ajaxcreated = () =>{
-      CenterNodes.center=[]
       var tableData = "789";
       var centerData = "789";
-      var port = "8199"
     async function getData () {
-      var JanusWeb = 'http://localhost:'+port+'/algo/queryDatasetById?id=';
-      var NebulaWeb = 'http://localhost:'+port+'/algo/queryDatasetById1?id=';
+      var JanusWeb = 'http://localhost:8200/algo/queryDatasetById?id=';
+      var NebulaWeb = 'http://localhost:8200/algo/queryDatasetById?id1=';
       var web = ""
-      var centerweb = "http://localhost:"+port+"/algo/computeBcById?id="
+      var centerweb = "http://localhost:8200/algo/computeBcById?id="
       try {
         if(data.graphid==1){
           web=JanusWeb;
@@ -142,16 +126,11 @@
         
         tableData = (await axios.get(web+data.tableid)).data
         // tableData = (await axios.get('http://localhost:8200/algo/queryDatasetById?id=383')).data
-        console.log("success",tableData.data)
+        console.log("successside",tableData.data)
         side = tableData.data
-
-        
-        centerData = (await axios.get(centerweb+data.tableid)).data
-        console.log("success22",centerData.data)
-        centerCount = centerData.data
-        // for (var i=0;i<10;i++){
-        //   console.log(centerCount[i])
-        // }
+        // centerData = (await axios.get(centerweb+data.tableid)).data
+        // console.log("success2",centerData.data)
+        // centerCount = centerData.data
         
       } catch (error) {
         // console.error("error",error);
@@ -161,15 +140,49 @@
         console.log(side)
       }
     }
+
+    // async function getCenter () {
+    //   var JanusWeb = 'http://localhost:8200/algo/queryDatasetById?id=';
+    //   var NebulaWeb = 'http://localhost:8200/algo/queryDatasetById?id1=';
+    //   var web = ""
+    //   var centerweb = "http://localhost:8200/algo/computeBcById?id="
+    //   try {
+    //     if(data.graphid==1){
+    //       web=JanusWeb;
+    //     }
+    //     else{
+    //       web=NebulaWeb
+    //     }
+        
+    //     // tableData = (await axios.get(web+data.tableid)).data
+    //     // // tableData = (await axios.get('http://localhost:8200/algo/queryDatasetById?id=383')).data
+    //     // console.log("success",tableData.data)
+    //     // side = tableData.data
+    //     centerData = (await axios.get(centerweb+data.tableid)).data
+    //     console.log("success2",centerData.data)
+    //     centerCount = centerData.data
+        
+    //   } catch (error) {
+    //     // console.error("error",error);
+    //     // alert("查询失败，请检查连接")
+    //   }
+    //   finally{
+    //     // console.log(side)
+    //   }
+    // }
     getData()
-    
+    // getCenter()
   }
     ajaxcreated();
+
+
+    
 
     watch(data, 
     (curr, old) => {
             // getData();
             ajaxcreated  ();
+         
             console.log("changed:000",curr, old,i);
             if(stage!=null){
               clearScreen();
@@ -222,13 +235,6 @@
                     fontColor: 'black',
                     fillStyle:"orange"
                 })
-                rootNode.addEventListener("click",function(){
-                      console.log(nodes[0])
-                      console.log(centerCount[nodes[0]])
-                      console.log(centerCount)
-                      CenterNodes.center.push({"node":nodes[0],"centers":centerCount[nodes[0]]})
-
-                    })
                 rootNode.selectedStyle = new jtopo.Style({
                     'font': 'bold 20px 仿宋'
                 });
@@ -249,10 +255,7 @@
                     })
                     newNode.addEventListener("click",function(){
                       console.log(nodes[i])
-                      console.log(centerCount[nodes[i]])
                       console.log(centerCount)
-                      CenterNodes.center.push({"node":nodes[i],"centers":centerCount[nodes[i]]})
-
                     })
                     newNode.selectedStyle = new jtopo.Style({
                         'font': 'bold 20px 仿宋'
@@ -305,16 +308,6 @@
             border-radius: 20px;
            
       z-index: 10;
-    }
-
-    .showcenter{
-      margin-right:50px ;
-      float: right;
-      position: relative;
-      right: 0;
-      // height: 200px;
-      width: 100px;
-      overflow:-moz-hidden-unscrollable;
     }
   }
   #GS{
