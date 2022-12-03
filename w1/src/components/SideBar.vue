@@ -25,6 +25,10 @@
           
           <div class="lifather" v-if="data.ifhistory">
             <p>Search History</p> 
+            <li class="datasetli"  v-for="(item,index) in hhistory" :key="index">
+              <li>datasetid : {{item.datasetid}}</li>
+              <li>pointid : {{item.pointid}}</li>
+            </li>
           </div>
           <div class="lifather" v-if="data.nebulaid">
             <p>Nubula Dataset</p>
@@ -89,6 +93,18 @@
       nebulaDataset:[]
     })
 
+    
+    var  hhistory = [
+    {
+      datasetid:1,
+      pointid:2
+    },
+    {
+      datasetid:11,
+      pointid:2
+    },
+    ]
+    
     const searchdata = reactive({
       datasetid:"",
       pointid:""
@@ -144,6 +160,22 @@
     const doSearch = ()=>{
         console.log(searchdata)
         emit("sendgid", searchdata);  
+        
+        var ifexist=0;
+        /*
+        <!-- for(let i in hhistory)
+        {
+          if(hhistory[i]==searchdata)ifexist=1;
+        } -->
+        */
+        if(true){
+          hhistory.push({
+            datasetid:searchdata.datasetid,
+            pointid:searchdata.pointid
+          })
+        }
+        
+        
     }
 
     const bars = [
@@ -243,7 +275,7 @@
     }
     .left1bar{
       
-        background-color: rgb(249, 226, 226);
+        background-color: rgb(255, 222, 222);
         margin: 0;
         position: fixed;
         left: 0;
@@ -256,6 +288,7 @@
         .Bar{
         position: relative;
         //left: -10%;
+        //margin: 1px;
         text-align: center;
         height: 70px;
         width: 110%;
@@ -283,7 +316,7 @@
         // border: 1px solid rgb(255, 217, 217);
         line-height: 100%;
         z-index: 100;
-        background-color: rgb(255, 217, 217);
+        background-color: rgb(255, 238, 238);
         li{
             position: relative;
             top: 43%;
@@ -310,7 +343,7 @@
 
     
     .left2bar{
-    background-color: rgb(87, 255, 163);
+    background-color: rgb(255, 238, 238);
     margin: 0;
     position: fixed;
     left: 6%;
@@ -318,7 +351,8 @@
     width: 17%;
     float: left;
     overflow: scroll;
-    -ms-overflow-style: none;
+
+
     z-index: 11;
 
     div{
@@ -381,6 +415,9 @@
           color: rgb(255, 255, 255);
           font-size: larger;
           cursor: pointer;
+          position: relative;
+  float: left;
+  left: 30px;
         }
         input::-webkit-input-placeholder {    /* Chrome/Opera/Safari */
             color: rgb(140, 140, 140);

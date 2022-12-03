@@ -1,6 +1,6 @@
 <template>
   <div id="graphScreen">
-    <button @click="draw">渲染</button>
+    <button class="change3 searchbtn DRAW" @click="draw">DRAW</button>
 
 
 
@@ -43,7 +43,6 @@ import axios from 'axios';
           {v1:0,v2:4},
           {v1:0,v2:5},
           {v1:5,v2:0}]
-
   var Janusside = [
           {v1:1,v2:12},
           {v1:1,v2:24},
@@ -54,14 +53,10 @@ import axios from 'axios';
           {v1:0,v2:4},
           {v1:0,v2:5},
           {v1:5,v2:0}]
-
   var side = []
   
   var centerCount = []
-
   var centerMap = new Map()
-
-
   const data = reactive({
       search:"sno",
       graphid :0,
@@ -76,7 +71,6 @@ import axios from 'axios';
   //     data.search = val;
   // };
   // defineExpose({ Receive });
-
   const ReceiveGraphid = (val) => {
       data.tableid = val.datasetid;
       data.search = val.pointid;
@@ -85,7 +79,6 @@ import axios from 'axios';
   };
   defineExpose({ ReceiveGraphid });
   var i =1;
-
   
   const CenterNodes = reactive({
       node:[],
@@ -93,7 +86,6 @@ import axios from 'axios';
       janasDataset:[],
       nebulaDataset:[]
   })
-
   const unique = (arr)=>{
     
     console.log("unique")
@@ -102,20 +94,15 @@ import axios from 'axios';
   
   var stage = null;
   var layer = null;
-
   const clearScreen = ()=>{
     layer.removeAllChild();
       layer.update();
   }
-
   var NodeMap=new Map()
-
   // watch(data.tableid,
   // (curr, old) => {
   //   getData()
   // },)
-
-
   const ajaxcreated = () =>{
     CenterNodes.center=[]
     var tableData = "";
@@ -146,7 +133,6 @@ import axios from 'axios';
       // tableData = (await axios.get('http://localhost:8200/algo/queryDatasetById?id=383')).data
       console.log("success",tableData.data)
       side = tableData.data
-
       
       centerData = (await axios.get(centerweb+data.tableid)).data
       console.log("success22",centerData.data)
@@ -157,7 +143,6 @@ import axios from 'axios';
       
       
       
-
     } catch (error) {
       // console.error("error",error);
       // alert("查询失败，请检查连接")
@@ -170,14 +155,11 @@ import axios from 'axios';
   
 }
   ajaxcreated();
-
   watch(ifchanged,
   (curr, old) => {
     ajaxcreated();
   }
   )
-
-
   const draw = () => {
           // getData();
           CenterNodes.center=[];
@@ -234,7 +216,6 @@ import axios from 'axios';
                     console.log(centerCount[nodes[0]])
                     console.log(centerCount)
                     CenterNodes.center.push({"node":nodes[0],"centers":centerCount[nodes[0]]})
-
                   })
               rootNode.selectedStyle = new jtopo.Style({
                   'font': 'bold 20px 仿宋'
@@ -259,7 +240,6 @@ import axios from 'axios';
                     console.log(centerCount[nodes[i]])
                     console.log(centerCount)
                     CenterNodes.center.push({"node":nodes[i],"centers":centerCount[nodes[i]]})
-
                   })
                   newNode.selectedStyle = new jtopo.Style({
                       'font': 'bold 20px 仿宋'
@@ -269,17 +249,13 @@ import axios from 'axios';
               }
               console.log(NodeMap)
          
-
               stage.hideToolbar();
               stage.show();
           }
           
-
 }
 // ,{ deep: true }
 // )
-
-
 </script>
 <style lang="less" >
 #graphScreen{
@@ -288,7 +264,7 @@ import axios from 'axios';
   width: 66.5%;
   position: relative;
   left:27% ;
-  top: 200px;
+  top: 80px;
   p{
     float: left;
     margin-left: 250px;
@@ -309,7 +285,6 @@ import axios from 'axios';
          
     z-index: 10;
   }
-
   .showcenter{
     margin-right:50px ;
     float: right;
@@ -324,7 +299,7 @@ import axios from 'axios';
   margin: 0;
   position: relative;
   // left: 0;
-  // top: 50px;
+   top: 20px;
   // // display: flex;
   // // float: left;
   width: 1600px;
@@ -338,9 +313,20 @@ import axios from 'axios';
   }
   // background-color: rgb(199, 227, 252);
 }
-
   
+.searchbtn{
+          height: 40px;
+          line-height: 40px;
+          color: rgb(255, 255, 255);
+          font-size: larger;
+          cursor: pointer;
+        }
+.DRAW{
+  position: relative;
+  float: left;
+  left: 30px;
+  top:-30px
+}
 </style> 
-
 
 
