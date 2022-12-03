@@ -1,343 +1,346 @@
 <template>
-    <div id="graphScreen">
-      <p v-if="data.graphid">JanusGraph数据集id:</p>
-      <p v-else>NebulaGraph数据集id:</p>
-      <input v-model="data.tableid" type="text" placeholder=" 请输入想要查询的数据集id">
+  <div id="graphScreen">
+    <button @click="draw">渲染</button>
 
-      <!-- <p ></p> -->
-      <input v-model="data.pointid" type="text" placeholder=" 查询中心性">
-      <p v-if="data.pointid">{{CenterNodes.center[data.pointid]}}</p>
 
-      <div class="showcenter">
-        <div  v-for="(item,index) in CenterNodes.center">
-          {{item.node}} : {{item.centers}}
-        </div>
+
+    <!-- <p v-if="data.graphid">JanusGraph数据集id:</p>
+    <p v-else>NebulaGraph数据集id:</p>
+    <input v-model="data.tableid" type="text" placeholder=" 请输入想要查询的数据集id"> -->
+
+    <!-- <p ></p> -->
+    <!-- <input v-model="data.pointid" type="text" placeholder=" 查询中心性"> -->
+    <!-- <p v-if="data.pointid">{{CenterNodes.center[data.pointid]}}</p> -->
+
+    <div class="showcenter">
+      <div>顶点  :  中心性</div>
+      <div  v-for="(item) in CenterNodes.center" :key="item.index">
+        {{item.node}} : {{item.centers}}
       </div>
-      <!-- <input type="text" name="" id=""> -->
-      <!-- <p>{{data.search}}</p> -->
-      <!-- <button @click="RecieveData">我长这么长我就不信我接收</button> -->
-      <div id="GS"></div>
     </div>
+    <!-- <input type="text" name="" id=""> -->
+    <!-- <p>{{data.search}}</p> -->
+    <!-- <button @click="RecieveData">我长这么长我就不信我接收</button> -->
+    <div id="GS"></div>
+  </div>
 </template>
+
+
+
+<script setup>
+// <script src="http://www.jtopo.com/download/jtopo-1.0.1_trial-min.umd.js">
+// import Request from '@/utils/request.js'
+import axios from 'axios';
+  import { reactive, defineExpose ,watch} from "vue";
+  import { onMounted, onUpdated, onRenderTriggered } from 'vue'
+  var Nebulaside = [
+          {v1:1,v2:12},
+          {v1:1,v2:24},
+          {v1:1,v2:2},
+          {v1:0,v2:1},
+          {v1:0,v2:2},
+          {v1:0,v2:3},
+          {v1:0,v2:4},
+          {v1:0,v2:5},
+          {v1:5,v2:0}]
+
+  var Janusside = [
+          {v1:1,v2:12},
+          {v1:1,v2:24},
+          {v1:1,v2:2},
+          {v1:0,v2:1},
+          {v1:0,v2:2},
+          {v1:0,v2:3},
+          {v1:0,v2:4},
+          {v1:0,v2:5},
+          {v1:5,v2:0}]
+
+  var side = []
   
+  var centerCount = []
+
+  var centerMap = new Map()
 
 
-  <script setup>
-  // import Request from '@/utils/request.js'
-  import axios from 'axios';
-    import { reactive, defineExpose ,watch} from "vue";
-    import { onMounted, onUpdated, onRenderTriggered } from 'vue'
-    var Nebulaside = [
-            {v1:1,v2:12},
-            {v1:1,v2:24},
-            {v1:1,v2:2},
-            {v1:0,v2:1},
-            {v1:0,v2:2},
-            {v1:0,v2:3},
-            {v1:0,v2:4},
-            {v1:0,v2:5},
-            {v1:5,v2:0}]
+  const data = reactive({
+      search:"sno",
+      graphid :0,
+      tableid :"",
+      pointid:0
+  })
+  const ifchanged = reactive({
+      ccount :0
+  })
+  // const Receive = (val) => {
+  //   console.log("serach:",data.search)
+  //     data.search = val;
+  // };
+  // defineExpose({ Receive });
 
-    var Janusside = [
-            {v1:1,v2:12},
-            {v1:1,v2:24},
-            {v1:1,v2:2},
-            {v1:0,v2:1},
-            {v1:0,v2:2},
-            {v1:0,v2:3},
-            {v1:0,v2:4},
-            {v1:0,v2:5},
-            {v1:5,v2:0}]
-
-    var side = []
-    
-    var centerCount = []
-
-    var centerMap = new Map()
-
-
-
-    // const getData1  = () =>{
-    //   var tableData = "789";
-    //   try {
-    //     // tableData = (await axios.get('http://localhost:8200/algo/queryDatasetById?id='+data.tableid)).data
-    //     tableData = (axios.get('http://localhost:8200/algo/queryDatasetById?id=383')).data
-    //     console.log("success",tableData.data)
-    //     side = tableData.data
-
-        
-        
-    //   } catch (error) {
-    //     console.error("error",error);
-    //     alert("查询失败，请检查连接")
-    //   }
-    //   finally{
-    //     console.log(side)
-    //   }
-    // }
-    const data = reactive({
-        search:"sno",
-        graphid :0,
-        tableid :"",
-        pointid:0
-    })
-    const Receive = (val) => {
-      console.log("serach:",data.search)
-        data.search = val;
-    };
-    // defineExpose({ Receive });
-
-    const ReceiveGraphid = (val) => {
-        data.graphid = val;
-        console.log(data.graphid)
-    };
-    defineExpose({ ReceiveGraphid ,Receive});
-    var i =1;
-
-    
-    const CenterNodes = reactive({
-        node:[],
-        center:[]
-    })
-
-    const unique = (arr)=>{
-      
-      console.log("unique")
-      return Array.from(new Set(arr))
+  const ReceiveGraphid = (val) => {
+      data.tableid = val.datasetid;
+      data.search = val.pointid;
+      console.log("daaaaaaaaaaaaaaaatagid",data)
+      ifchanged.ccount++;
   };
+  defineExpose({ ReceiveGraphid });
+  var i =1;
+
+  
+  const CenterNodes = reactive({
+      node:[],
+      center:[],
+      janasDataset:[],
+      nebulaDataset:[]
+  })
+
+  const unique = (arr)=>{
     
-    var stage = null;
-    var layer = null;
+    console.log("unique")
+    return Array.from(new Set(arr))
+};
+  
+  var stage = null;
+  var layer = null;
 
-    const clearScreen = ()=>{
-      layer.removeAllChild();
-        layer.update();
-    }
-
-    var NodeMap=new Map()
-
-    // watch(data.tableid,
-    // (curr, old) => {
-    //   getData()
-    // },)
-
-
-    const ajaxcreated = () =>{
-      CenterNodes.center=[]
-      var tableData = "789";
-      var centerData = "789";
-      var port = "8199"
-    async function getData () {
-      var JanusWeb = 'http://localhost:'+port+'/algo/queryDatasetById?id=';
-      var NebulaWeb = 'http://localhost:'+port+'/algo/queryDatasetById1?id=';
-      var web = ""
-      var centerweb = "http://localhost:"+port+"/algo/computeBcById?id="
-      try {
-        if(data.graphid==1){
-          web=JanusWeb;
-        }
-        else{
-          web=NebulaWeb
-        }
-        
-        tableData = (await axios.get(web+data.tableid)).data
-        // tableData = (await axios.get('http://localhost:8200/algo/queryDatasetById?id=383')).data
-        console.log("success",tableData.data)
-        side = tableData.data
-
-        
-        centerData = (await axios.get(centerweb+data.tableid)).data
-        console.log("success22",centerData.data)
-        centerCount = centerData.data
-        // for (var i=0;i<10;i++){
-        //   console.log(centerCount[i])
-        // }
-        
-      } catch (error) {
-        // console.error("error",error);
-        // alert("查询失败，请检查连接")
-      }
-      finally{
-        console.log(side)
-      }
-    }
-    getData()
-    
+  const clearScreen = ()=>{
+    layer.removeAllChild();
+      layer.update();
   }
+
+  var NodeMap=new Map()
+
+  // watch(data.tableid,
+  // (curr, old) => {
+  //   getData()
+  // },)
+
+
+  const ajaxcreated = () =>{
+    CenterNodes.center=[]
+    var tableData = "";
+    var centerData = "";
+    var datasetinfo = "";
+    
+    var port = "8199";
+    var ip0 = "localhost";
+    var ip1 = "192.168.70.184";
+  async function getData () {
+    var selectDataset = "http://"+ip0+":"+port+"/dataset/selectDataset";
+    var JanusWeb = 'http://'+ip0+':'+port+'/algo/queryDatasetById?id=';
+    var NebulaWeb = 'http://'+ip0+':'+port+'/algo/queryDatasetById?id=';
+    var web = 'http://'+ip0+':'+port+'/algo/queryDatasetById?id=';
+    var centerweb = 'http://'+ip0+':'+port+'/algo/computeEgoById?id='
+    try {
+      
+      datasetinfo = (await axios.get("http://"+ip0+":"+port+"/dataset/selectDataset")).data
+      console.log("datasetinfo",datasetinfo)
+      for(let i in datasetinfo)
+      if(datasetinfo[i]["sourse"] == 2){
+        web=JanusWeb;
+      }
+      else{
+        web=NebulaWeb
+      }
+      tableData = (await axios.get(web+data.tableid)).data
+      // tableData = (await axios.get('http://localhost:8200/algo/queryDatasetById?id=383')).data
+      console.log("success",tableData.data)
+      side = tableData.data
+
+      
+      centerData = (await axios.get(centerweb+data.tableid)).data
+      console.log("success22",centerData.data)
+      centerCount = centerData.data
+      // for (var i=0;i<10;i++){
+      //   console.log(centerCount[i])
+      // }
+      
+      
+      
+
+    } catch (error) {
+      // console.error("error",error);
+      // alert("查询失败，请检查连接")
+    }
+    finally{
+      console.log(side)
+    }
+  }
+  getData()
+  
+}
+  ajaxcreated();
+
+  watch(ifchanged,
+  (curr, old) => {
     ajaxcreated();
-
-    watch(data, 
-    (curr, old) => {
-            // getData();
-            ajaxcreated  ();
-            console.log("changed:000",curr, old,i);
-            if(stage!=null){
-              clearScreen();
-            }
-            stage = new jtopo.Stage('GS');
-          // var stage = this.Stage;
-            layer = new jtopo.Layer('default');
-            var src = (data.search)*1;
-            var ifexist = 0 
-            var sides = side;
-            // console.log("typeof1",typeof(src))
-            // console.log("typeof2",typeof(sides[0].v1))
-            // console.log("typeof3",typeof(src*1))
-            console.log("sides:",sides)
-            var nodes = []
-            console.log(src)
-            nodes.push(src)
-            for(let i in sides){
-                // if (sides[i].v1==src||sides[i].v2==src){
-                //     console.log(sides[i].v1,"<=>",sides[i].v2);
-                // }
-                if (sides[i].vertex1==src){
-                    nodes.push(sides[i].vertex2);
-                    ifexist=1;
-                }
-                if (sides[i].vertex2==src){
-                    nodes.push(sides[i].vertex1);
-                    ifexist=1;
-                }
-            }
-            console.log("nodes::",nodes)
-            if(!ifexist){
-                // alert("未查询到该点");  
-            }
-            else{
-                nodes = unique(nodes);
-                console.log(nodes)
-                var nodes = nodes;
-                
-                stage.addChild(layer);
-                
-                // for(let i in nodes){
-                //     console.log(nodes[i])
-                // }
-                var rootNode = new jtopo.CircleNode(nodes[0].toString(), 300, 400, 36, 36);
-                rootNode.setStyles({
-                    textPosition: "center",
-                    textAlign: "center",
-                    textBaseline: "middle",
-                    fontColor: 'black',
-                    fillStyle:"orange"
-                })
-                rootNode.addEventListener("click",function(){
-                      console.log(nodes[0])
-                      console.log(centerCount[nodes[0]])
-                      console.log(centerCount)
-                      CenterNodes.center.push({"node":nodes[0],"centers":centerCount[nodes[0]]})
-
-                    })
-                rootNode.selectedStyle = new jtopo.Style({
-                    'font': 'bold 20px 仿宋'
-                });
-                layer.addChild(rootNode);
-                for(let i in nodes){
-                    if(i==0)continue;
-                    var sjs1=Math.round(Math.random()*1000)
-                    var sjs2=Math.round(Math.random()*1000)
-                    var newNode = new jtopo.CircleNode(nodes[i].toString(), sjs1, sjs2, 36, 36);
-                    var link = new jtopo.Link('Link',rootNode,newNode);
-                    layer.addChild(link);
-                    newNode.setStyles({
-                        textPosition: "center",
-                        textAlign: "center",
-                        textBaseline: "middle",
-                        fontColor: 'black',
-                        fillStyle:"white"
-                    })
-                    newNode.addEventListener("click",function(){
-                      console.log(nodes[i])
-                      console.log(centerCount[nodes[i]])
-                      console.log(centerCount)
-                      CenterNodes.center.push({"node":nodes[i],"centers":centerCount[nodes[i]]})
-
-                    })
-                    newNode.selectedStyle = new jtopo.Style({
-                        'font': 'bold 20px 仿宋'
-                    });
-                    NodeMap.set(nodes[i],newNode);
-                    layer.addChild(newNode);
-                }
-                console.log(NodeMap)
-                // for(let i in sides){
-                //   if (nodes.indexOf(sides[i].v1)!=-1 &&nodes.indexOf(sides[i].v2)!=-1){
-                //     var link = new jtopo.Link('Link',NodeMap[sides[i].v1],NodeMap[sides[i].v2]);
-                //     layer.addChild(link);
-                // }
-                // }
-
-                stage.hideToolbar();
-                stage.show();
-            }
-            
-
-  },
+  }
   )
 
 
-  </script>
-  <style lang="less" >
-  #graphScreen{
-    margin: 0;
-    // float: left;
-    width: 86.5%;
-    position: relative;
-    left:13.5% ;
+  const draw = () => {
+          // getData();
+          CenterNodes.center=[];
+          CenterNodes.node=[];
+          // ajaxcreated  ();
+          // console.log("changed:000",curr, old,i);
+          if(stage!=null){
+            clearScreen();
+          }
+          stage = new jtopo.Stage('GS');
+        // var stage = this.Stage;
+          layer = new jtopo.Layer('default');
+          var src = (data.search)*1;
+          var ifexist = 0 
+          var sides = side;
+          console.log("sides:",sides)
+          var nodes = []
+          console.log(src)
+          nodes.push(src)
+          for(let i in sides){
+              if (sides[i].vertex1==src){
+                  nodes.push(sides[i].vertex2);
+                  ifexist=1;
+              }
+              if (sides[i].vertex2==src){
+                  nodes.push(sides[i].vertex1);
+                  ifexist=1;
+              }
+          }
+          console.log("nodes::",nodes)
+          if(!ifexist){
+              // alert("未查询到该点");  
+          }
+          else{
+              nodes = unique(nodes);
+              console.log(nodes)
+              var nodes = nodes;
+              
+              stage.addChild(layer);
+              
+              // for(let i in nodes){
+              //     console.log(nodes[i])
+              // }
+              var rootNode = new jtopo.CircleNode(nodes[0].toString(), 300, 400, 36, 36);
+              rootNode.setStyles({
+                  textPosition: "center",
+                  textAlign: "center",
+                  textBaseline: "middle",
+                  fontColor: 'black',
+                  fillStyle:"orange"
+              })
+              rootNode.addEventListener("click",function(){
+                    console.log(nodes[0])
+                    console.log(centerCount[nodes[0]])
+                    console.log(centerCount)
+                    CenterNodes.center.push({"node":nodes[0],"centers":centerCount[nodes[0]]})
 
-    p{
-      float: left;
-      margin-left: 250px;
-      font-size: 20px;
-      z-index: 10;
-    }
-    input{
-      float: left;
-      margin-left: 15px;
-      
-            padding-left: 2px;
-            font-size: medium;
-            height: 20px;
-            // position: relative;
-            // top:20%;
-            outline: none; 
-            border-radius: 20px;
-           
-      z-index: 10;
-    }
+                  })
+              rootNode.selectedStyle = new jtopo.Style({
+                  'font': 'bold 20px 仿宋'
+              });
+              layer.addChild(rootNode);
+              for(let i in nodes){
+                  if(i==0)continue;
+                  var sjs1=Math.round(Math.random()*1000)
+                  var sjs2=Math.round(Math.random()*1000)
+                  var newNode = new jtopo.CircleNode(nodes[i].toString(), sjs1, sjs2, 36, 36);
+                  var link = new jtopo.Link('Link',rootNode,newNode);
+                  layer.addChild(link);
+                  newNode.setStyles({
+                      textPosition: "center",
+                      textAlign: "center",
+                      textBaseline: "middle",
+                      fontColor: 'black',
+                      fillStyle:"white"
+                  })
+                  newNode.addEventListener("click",function(){
+                    console.log(nodes[i])
+                    console.log(centerCount[nodes[i]])
+                    console.log(centerCount)
+                    CenterNodes.center.push({"node":nodes[i],"centers":centerCount[nodes[i]]})
 
-    .showcenter{
-      margin-right:50px ;
-      float: right;
-      position: relative;
-      right: 0;
-      // height: 200px;
-      width: 100px;
-      overflow:-moz-hidden-unscrollable;
-    }
+                  })
+                  newNode.selectedStyle = new jtopo.Style({
+                      'font': 'bold 20px 仿宋'
+                  });
+                  NodeMap.set(nodes[i],newNode);
+                  layer.addChild(newNode);
+              }
+              console.log(NodeMap)
+         
+
+              stage.hideToolbar();
+              stage.show();
+          }
+          
+
+}
+// ,{ deep: true }
+// )
+
+
+</script>
+<style lang="less" >
+#graphScreen{
+  margin: 0;
+  // float: left;
+  width: 66.5%;
+  position: relative;
+  left:27% ;
+  top: 200px;
+  p{
+    float: left;
+    margin-left: 250px;
+    font-size: 20px;
+    z-index: 10;
   }
-  #GS{
-    margin: 0;
+  input{
+    float: left;
+    margin-left: 15px;
+    
+          padding-left: 2px;
+          font-size: medium;
+          height: 20px;
+          // position: relative;
+          // top:20%;
+          outline: none; 
+          border-radius: 20px;
+         
+    z-index: 10;
+  }
+
+  .showcenter{
+    margin-right:50px ;
+    float: right;
+    position: relative;
+    right: 0;
+    // height: 200px;
+    width: 100px;
+    overflow:-moz-hidden-unscrollable;
+  }
+}
+#GS{
+  margin: 0;
+  position: relative;
+  // left: 0;
+  // top: 50px;
+  // // display: flex;
+  // // float: left;
+  width: 1600px;
+  height: 1000px;
+  // // margin-top: 50px;
+  
+  canvas{
     position: relative;
     left: 0;
-    top: 50px;
-    // display: flex;
-    // float: left;
-    width: 1600px;
-    height: 1000px;
-    // margin-top: 50px;
-    
-    canvas{
-      position: relative;
-      left: 0;
-      z-index: -1;
-    }
-    // background-color: rgb(199, 227, 252);
+    z-index: -1;
+  }
+  // background-color: rgb(199, 227, 252);
 }
 
-    
-  </style> 
+  
+</style> 
 
 
 

@@ -10,6 +10,8 @@ import Config from '@/settings'
 
 
 const service = axios.create({
+  baseURL:'dataset',//把原来的项目地址，改成api，解决跨域问题
+  timeout:3000,
   // baseURL: process.env.NODE_ENV === 'production' ? process.env.VUE_APP_BASE_API : '/', 
   devServer: {
   //是否自动打开浏览器

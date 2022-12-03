@@ -4,12 +4,12 @@
             <h2>湖南大学 x 之江实验室</h2>
             <h2>查询图关系使用手册</h2>
         </div>
-        <div class="g1">
+        <!-- <div class="g1">
             <input ref='info' v-model="data.search" type="text" placeholder=" 请输入想要查询的点">
             <button class="btn change3 searchbtn" @click="doSearch"><span>GO</span></button>
-            <!-- <button class="btn change3 clearbtn" @click="clearScreen"><span>clear</span></button> -->
+             <button class="btn change3 clearbtn" @click="clearScreen"><span>clear</span></button> 
             
-        </div>
+        </div> -->
     </div>
   </template>
   
@@ -99,7 +99,7 @@
             .searchbtn{
                 position: absolute;
                 top: 20%;
-                left: 65%;
+                left: 63%;
             }
 
             .clearbtn{
