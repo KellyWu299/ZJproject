@@ -21,7 +21,7 @@
           </div>
         </dir>
 
-        <div class="left2bar">
+        <div class="left2bar" v-if="data.ifshowmore">
           
           <div class="lifather" v-if="data.ifhistory">
             <p>Search History</p> 
@@ -31,9 +31,9 @@
             </li>
           </div>
           <div class="lifather" v-if="data.nebulaid">
-            <p>Nubula Dataset</p>
-            <li class="datasetli" @click="changeheight" v-for="(item,index) in dataset.nebulaDataset" :key="index">
-              <li>id : {{item.id}}</li>
+            <p @click="showmore">Nubula Dataset</p>
+            <li class="datasetli"  v-for="(item,index) in dataset.nebulaDataset" :key="index" @click="changeDatasetId(item.id)">
+              <li >id : {{item.id}}</li>
               <li>name : {{item.name}}</li>
               <li>description : {{item.description}}</li>
               <li>vertexProperty : {{item.vertexProperty}}</li>
@@ -43,24 +43,73 @@
             </li>
           </div>
           <div class="lifather" v-if="data.janusid">
-            <p>Janus Dataset</p>
+            <p @click="showmore">Janus Dataset</p>
             <li class="datasetli" @click="changeheight" v-for="(item,index) in dataset.janasDataset" :key="index">
               <li>id : {{item.id}}</li>
               <li>name : {{item.name}}</li>
               <li>description : {{item.description}}</li>
               <li>vertexProperty : {{item.vertexProperty}}</li>
               <li>edgeProperty : {{item.edgeProperty}}</li>
-              <li>taskName : {{item.taskName}}</li>
+              <li>taskName : {{(item.taskName)}}</li>
               <li>janusIdFileName : {{item.janusIdFileName}}</li>
             </li>
           </div>
       </div>
 
-      <div class="searchg1">
-            <input ref='datasetID' v-model="searchdata.datasetid" type="text" placeholder=" 请输入数据集id">
+      <div class="left3bar" v-if="data.dontshowmore"> 
 
-            <input ref='pointID' v-model="searchdata.pointid" type="text" placeholder=" 请输入点id">
-            <button class=" change3 searchbtn" @click="doSearch"><span>GO</span></button>
+          <div class="lifather" v-if="data.nebulaid">
+            <p class="gun" @click="showmore">Nubula Dataset</p>
+            <ul class="lihead">
+              <li class="lid">id</li>
+              <li class="lname">name</li>
+              <li class="ldes">description</li>
+              <li class="lver">vertexProperty</li>
+              <li class="ledg">edgeProperty</li>
+              <!-- <li class="ltas">taskName</li> -->
+              <li class="lfm">janusIdFileName</li>
+            </ul>
+            <li class="datasetli"  v-for="(item,index) in dataset.nebulaDataset" :key="index" @click="changeDatasetId(item.id)">
+              <li class="lid">{{(item.id||null)}}</li>
+              <li class="lname">{{(item.name||null)}}</li>
+              <li class="ldes">{{(item.description||null)}}</li>
+              <li class="lver">{{(item.vertexProperty||null)}}</li>
+              <li class="ledg">{{(item.edgeProperty||null)}}</li>
+              <!-- <li class="ltas">{{(item.taskName||null)}}</li> -->
+              <li class="lfm">{{(item.janusIdFileName||null)}}</li>
+              <li class="delete">删除</li>
+            </li>
+          </div>
+          <div class="lifather" v-if="data.janusid">
+            <p class="gun" @click="showmore">Janus Dataset</p>
+            <ul class="lihead">
+              <li class="lid">id</li>
+              <li class="lname">name</li>
+              <li class="ldes">description</li>
+              <li class="lver">vertexProperty</li>
+              <li class="ledg">edgeProperty</li>
+              <!-- <li class="ltas">taskName</li> -->
+              <li class="lfm">janusIdFileName</li>
+            </ul>
+            <li class="datasetli" @click="changeheight" v-for="(item,index) in dataset.janasDataset" :key="index">
+              <li class="lid">{{item.id}}</li>
+              <li class="lname">{{item.name}}</li>
+              <li class="ldes">{{item.description}}</li>
+              <li class="lver">{{item.vertexProperty}}</li>
+              <li class="ledg">{{item.edgeProperty}}</li>
+              <!-- <li class="ltas">{{item.taskName}}</li> -->
+              <li class="lfm">{{item.janusIdFileName}}</li>
+              <li class="delete" @click="deleteDataset(item.id)">删除</li>
+            </li>
+          </div>
+      </div>
+         
+      <div class="searchg1">
+            <!-- <input ref='datasetID' v-model="searchdata.datasetid" type="text" placeholder=" 请输入数据集id"> -->
+
+            
+            <input class='pointID' v-model="searchdata.pointid" type="text" placeholder=" 请输入点id">
+            <button class=" change3 searchbtn" @click="doSearchAndShowmore"><span>GO</span></button>
             
         </div>
     </div>
@@ -85,24 +134,256 @@
       ifhistory:false,
       nebulaid:true,
       janusid:false,
-      ifheight : false
+      ifheight : false,
+      ifshowmore:true,
+      dontshowmore:false
     })
 
     const dataset = reactive({
-      janasDataset:[],
-      nebulaDataset:[]
+      janasDataset:[{
+            "id": 422,
+            "name": "thousand.txt",
+            "source": 2,
+            "description": "thousandTest",
+            "vertexProperty": "vv1",
+            "edgeProperty": "ee1",
+            "taskName": null,
+            "janusIdFileName": "IdFile11"
+        },
+        {
+            "id": 423,
+            "name": "tenThousand.txt",
+            "source": 2,
+            "description": "tenthousandTest",
+            "vertexProperty": "vv2",
+            "edgeProperty": "ee2",
+            "taskName": null,
+            "janusIdFileName": "IdFile22"
+        },
+        {
+            "id": 424,
+            "name": "oneHundredThousand.txt",
+            "source": 2,
+            "description": "onehundredthousandTest",
+            "vertexProperty": "vv3",
+            "edgeProperty": "ee3",
+            "taskName": null,
+            "janusIdFileName": "IdFile33"
+        },
+        {
+            "id": 428,
+            "name": "thousand .csv",
+            "source": 1,
+            "description": "thousandTest",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 429,
+            "name": "tenThousand .csv",
+            "source": 1,
+            "description": "tenthousandTest",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 430,
+            "name": "oneHundredThousand.csv",
+            "source": 1,
+            "description": "onehundredthousandTest",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 431,
+            "name": "thousand .csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 432,
+            "name": "thousand .csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 433,
+            "name": "1000.csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "222",
+            "edgeProperty": "222",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 434,
+            "name": "1000.csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "222",
+            "edgeProperty": "222",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 435,
+            "name": "thousand .csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 436,
+            "name": "thousand .csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        }],
+      nebulaDataset:[{
+            "id": 422,
+            "name": "thousand.txt",
+            "source": 2,
+            "description": "thousandTest",
+            "vertexProperty": "vv1",
+            "edgeProperty": "ee1",
+            "taskName": null,
+            "janusIdFileName": "IdFile11"
+        },
+        {
+            "id": 423,
+            "name": "tenThousand.txt",
+            "source": 2,
+            "description": "tenthousandTest",
+            "vertexProperty": "vv2",
+            "edgeProperty": "ee2",
+            "taskName": null,
+            "janusIdFileName": "IdFile22"
+        },
+        {
+            "id": 424,
+            "name": "oneHundredThousand.txt",
+            "source": 2,
+            "description": "onehundredthousandTest",
+            "vertexProperty": "vv3",
+            "edgeProperty": "ee3",
+            "taskName": null,
+            "janusIdFileName": "IdFile33"
+        },
+        {
+            "id": 428,
+            "name": "thousand .csv",
+            "source": 1,
+            "description": "thousandTest",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 429,
+            "name": "tenThousand .csv",
+            "source": 1,
+            "description": "tenthousandTest",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 430,
+            "name": "oneHundredThousand.csv",
+            "source": 1,
+            "description": "onehundredthousandTest",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 431,
+            "name": "thousand .csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 432,
+            "name": "thousand .csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 433,
+            "name": "1000.csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "222",
+            "edgeProperty": "222",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 434,
+            "name": "1000.csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "222",
+            "edgeProperty": "222",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 435,
+            "name": "thousand .csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        },
+        {
+            "id": 436,
+            "name": "thousand .csv",
+            "source": 1,
+            "description": "thousand",
+            "vertexProperty": "null",
+            "edgeProperty": "null",
+            "taskName": null,
+            "janusIdFileName": "null"
+        }]
     })
 
     
     var  hhistory = [
-    {
-      datasetid:1,
-      pointid:2
-    },
-    {
-      datasetid:11,
-      pointid:2
-    },
     ]
     
     const searchdata = reactive({
@@ -125,6 +406,8 @@
           
           datasetinfo = (await axios.get(selectDataset)).data.data
           console.log("datasetinfo",datasetinfo)
+          dataset.janasDataset=[];
+          dataset.nebulaDataset=[];
           for(let i in datasetinfo)
           if(datasetinfo[i]["source"] == 2){
             dataset.janasDataset.push(datasetinfo[i]);
@@ -212,8 +495,23 @@
       else{
         ce.style.height = 'auto'
       };   
+      
     }
     
+    const changeDatasetId=(id)=>{
+      searchdata.datasetid=id;
+      console.log(searchdata.datasetid);
+    }
+
+    const deleteDataset=(id)=>{
+      searchdata.datasetid=id;
+      console.log(searchdata.datasetid);
+    }
+
+    const changeAll=(id)=>{
+      changeheight();
+      changeDatasetId(id);
+    }
 
     const item1=()=>{
       console.log("I am item1's method")
@@ -264,7 +562,18 @@
             ifshow = !ifshow;
         }
     
+    const showmore = ()=>{
+      data.ifshowmore = !data.ifshowmore;
+      data.dontshowmore = !data.dontshowmore;
+      console.log(data.ifshowmore)
+    }
   
+    const doSearchAndShowmore = ()=>{
+      doSearch();
+      showmore();
+    }
+
+
   </script>
   <style lang="less" scoped>
   
@@ -386,28 +695,118 @@
 
     p{
       font-size: x-large;
-      margin:10px
-      
+      margin:10px;
+      cursor: pointer;
     }
   }
 
+    .left3bar{
+      position: fixed;
+      width: 78%;
+      left: 7%;
+      top:15%;
+      height: 80%;
+      float: left;
+      overflow:hidden;
+      z-index: 11;
+      //background-color: rgb(255, 194, 194);
+      border: 2px solid gray;
 
+      div{
+      width: 100%;
+      height: 100%;
+      //background-color: antiquewhite;
+
+      .lihead{
+        height: 50px;
+        width: 100%;
+        line-height: 50px;
+        overflow: hidden;
+        padding: 5px;
+        //cursor: pointer;
+        float: left;
+        li{
+          float: left;
+          overflow: hidden;
+          //border:1px solid black ;
+        }
+      }
+      .datasetli{
+        
+        height: 33px;
+        line-height: 33px;
+        overflow: hidden;
+        padding: 5px;
+        cursor: pointer;
+        li{
+          float: left;
+          overflow: hidden;
+        }
+        .delete{
+        position: relative;
+        right:10px;
+        float: right;
+      }
+      }
+
+      .lid{
+        width: 10%;
+      }
+      .lname{
+        width:10%;
+      }
+      .ldes{
+        width: 25%;
+      }
+      .lver{
+        width: 8%;
+      }
+      .ledg{
+        width: 8%;
+      }
+      .ltas{
+        width: 15%;
+      }
+      .lfm{
+        width: 10%;
+      }
+      
+      .datasetli:nth-child(odd){
+        background-color: rgb(255, 177, 203);
+      }
+
+      .datasetli:nth-child(even){
+        background-color: rgb(177, 191, 255);
+      }
+    }
+
+      .gun{
+        position: fixed;
+        top:9%;
+        left: 10%;
+        font-size: larger;
+        cursor: pointer;
+      }
+    }
 
   .searchg1{
             
             float: left;
             width: 800px;
-            height: 100%;
-            left: 23%;
+            height: 80%;
+            left:18%;
             position: fixed;
             margin-left: 100px;
         input{
           //border-radius: 20px;
+          position: relative;
           height: 30px;
           width: 200px;
           font-size: large;
           padding-left: 10px;
           float: left;
+          //border: 0;
+          top: 1%;
         }
         .searchbtn{
           height: 40px;

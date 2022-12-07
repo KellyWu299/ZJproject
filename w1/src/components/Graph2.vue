@@ -13,9 +13,10 @@
     <!-- <p v-if="data.pointid">{{CenterNodes.center[data.pointid]}}</p> -->
 
     <div class="showcenter">
-      <div>顶点  :  中心性</div>
-      <div  v-for="(item) in CenterNodes.center" :key="item.index">
-        {{item.node}} : {{item.centers}}
+      <h3>顶点中心性查询</h3>
+      <div class="datasetli" v-for="(item) in CenterNodes.center" :key="item.index">
+        <li>顶点id:{{item.node}}</li>
+        <li>中心性:{{(item.centers||-1)}}</li>
       </div>
     </div>
     <!-- <input type="text" name="" id=""> -->
@@ -259,11 +260,12 @@ import axios from 'axios';
 </script>
 <style lang="less" >
 #graphScreen{
+  // background-color: rgb(255, 210, 210);
   margin: 0;
   // float: left;
-  width: 66.5%;
+  width: 74.5%;
   position: relative;
-  left:27% ;
+  left:23% ;
   top: 80px;
   p{
     float: left;
@@ -286,13 +288,29 @@ import axios from 'axios';
     z-index: 10;
   }
   .showcenter{
-    margin-right:50px ;
+    // margin-right:50px ;
     float: right;
-    position: relative;
+    position: fixed;
     right: 0;
+    top: 49px;
     // height: 200px;
-    width: 100px;
+    width: 200px;
+    height: 120%;
+    border: 1px solid rgb(201, 147, 147);
+    // height: 150px;
+    background-color:rgb(255, 238, 238);
     overflow:-moz-hidden-unscrollable;
+    h3{
+      margin: 10px;
+    }  
+
+    .datasetli:nth-child(odd){
+        background-color: rgb(255, 177, 203);
+      }
+
+    .datasetli:nth-child(even){
+        background-color: rgb(177, 191, 255);
+      }
   }
 }
 #GS{
@@ -302,8 +320,8 @@ import axios from 'axios';
    top: 20px;
   // // display: flex;
   // // float: left;
-  width: 1600px;
-  height: 1000px;
+  width: 740px;
+  height: 560px;
   // // margin-top: 50px;
   
   canvas{
@@ -324,8 +342,8 @@ import axios from 'axios';
 .DRAW{
   position: relative;
   float: left;
-  left: 30px;
-  top:-30px
+  left: 400px;
+  top:-80px
 }
 </style> 
 

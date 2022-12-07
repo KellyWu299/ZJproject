@@ -31,9 +31,6 @@ const Sendgid = (val) => {
   <!-- <TB2 @searchNode="sendSearch"></TB2> -->
   <TB2></TB2>
   <SideBar @sendgid="Sendgid"></SideBar>
-  
-  <!-- <G2 ref="searchToGraph Rgid"></G2> -->
-  <!-- <left2bar></left2bar> -->
   <G2 ref="searchToGraph"></G2>
 </template>
  
