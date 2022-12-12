@@ -264,6 +264,7 @@ import axios from 'axios';
   margin: 0;
   // float: left;
   width: 74.5%;
+  height: 1200px;
   position: relative;
   left:23% ;
   top: 80px;
@@ -320,11 +321,13 @@ import axios from 'axios';
    top: 20px;
   // // display: flex;
   // // float: left;
-  width: 740px;
-  height: 560px;
+  width: 80%;
+  height: 90%;
   // // margin-top: 50px;
   
   canvas{
+    height: 100%;
+    width: 100%;
     position: relative;
     left: 0;
     z-index: -1;

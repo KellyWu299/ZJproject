@@ -14,10 +14,18 @@
           </ul>
 
           <div id="readme" class="tanchuang" v-if="data.showreadme">用户手册
-            <button @click="item4">关闭</button>
+            <!-- <button @click="item4">关闭</button> -->
+            <p>1、点击侧边栏，选择数据集种类，可以获得相关数据集展示</p>
+            <p>2、触碰相应数据集可以获得详情，点击相关数据集，进入查询模式</p>
+            <p>3、进入查询模式后，在输入框输入相应点id，点击go查询，点击draw渲染网络图</p>
+            <p>4、点击数据集上方nebula\janus graph可进入数据集操作界面</p>
+            <p>5、点击history获取历史查询数据</p>
           </div>
           <div id="tools" class="tanchuang" v-if="data.showtools">设置
-            <button @click="item5">关闭</button>
+          </div>
+          <div id="tools" class="tanchuang" v-if="data.showtools">设置
+            <p>本功能仍在开发中</p>
+            <!-- <button @click="item5">关闭</button> -->
           </div>
         </dir>
 
@@ -68,6 +76,7 @@
               <li class="ledg">edgeProperty</li>
               <!-- <li class="ltas">taskName</li> -->
               <li class="lfm">janusIdFileName</li>
+              <li class="addDataset" @click="changeAdd(true)">+</li>
             </ul>
             <li class="datasetli"  v-for="(item,index) in dataset.nebulaDataset" :key="index" @click="changeDatasetId(item.id)">
               <li class="lid">{{(item.id||null)}}</li>
@@ -77,7 +86,7 @@
               <li class="ledg">{{(item.edgeProperty||null)}}</li>
               <!-- <li class="ltas">{{(item.taskName||null)}}</li> -->
               <li class="lfm">{{(item.janusIdFileName||null)}}</li>
-              <li class="delete">删除</li>
+              <li class="delete" @click="ajaxdelete(item.id)">删除</li>
             </li>
           </div>
           <div class="lifather" v-if="data.janusid">
@@ -90,6 +99,7 @@
               <li class="ledg">edgeProperty</li>
               <!-- <li class="ltas">taskName</li> -->
               <li class="lfm">janusIdFileName</li>
+              <li class="addDataset" @click="changeAdd(true)">+</li>
             </ul>
             <li class="datasetli" @click="changeheight" v-for="(item,index) in dataset.janasDataset" :key="index">
               <li class="lid">{{item.id}}</li>
@@ -99,7 +109,7 @@
               <li class="ledg">{{item.edgeProperty}}</li>
               <!-- <li class="ltas">{{item.taskName}}</li> -->
               <li class="lfm">{{item.janusIdFileName}}</li>
-              <li class="delete" @click="deleteDataset(item.id)">删除</li>
+              <li class="delete" @click="ajaxdelete(item.id)">删除</li>
             </li>
           </div>
       </div>
@@ -112,6 +122,17 @@
             <button class=" change3 searchbtn" @click="doSearchAndShowmore"><span>GO</span></button>
             
         </div>
+
+        <div class="addBar" v-if="data.ifadd">
+          <button class="closebtn" @click="changeAdd(false)">X</button>
+          <!-- <form id="ufd" action="" > -->
+            <input  ref="file1" type="file" name=""   placeholder="点击上传文件"/>
+            <input  ref="file2" type="file" name=""   placeholder="点击上传文件"/>
+            <input type="text">
+            <button @click="upFile">tmd提交</button>
+          <!-- </form> -->
+          
+        </div>
     </div>
   </template>
   
@@ -122,6 +143,8 @@
   import { reactive, defineEmits ,ref,watch} from "vue";
   import { showFooter } from "../settings";
   import axios from 'axios';
+import { upload } from "@/utils/upload";
+import { type } from "os";
 
 
 
@@ -136,7 +159,8 @@
       janusid:false,
       ifheight : false,
       ifshowmore:true,
-      dontshowmore:false
+      dontshowmore:false,
+      ifadd:false
     })
 
     const dataset = reactive({
@@ -391,15 +415,15 @@
       pointid:""
     })
     
-
+    var port = "8199";
+    var ip0 = "localhost";
+    var ip1 = "192.168.70.184";
+    const  file1 = ref(null);
+    const  file2 = ref(null);
     const ajaxcreated = () =>{
         var tableData = "";
         var centerData = "";
-        var datasetinfo = "";
-        
-        var port = "8199";
-        var ip0 = "localhost";
-        var ip1 = "192.168.70.184";
+        var datasetinfo = "";    
       async function getData () {
         var selectDataset = "http://"+ip0+":"+port+"/dataset/selectDataset";
         try {
@@ -428,7 +452,126 @@
     }
   ajaxcreated();
 
+
+    const ajaxdelete =(did)=>{
+      var deleteinfo="";
+      //var id = did;
+      async function deleteDataset(did){
+        var deletedata = "http://"+ip0+":"+port+"/dataset/delete/"+did;
+        try {
+          deleteinfo = (await axios.post(deletedata)).data
+          console.log("deleteinfo",deleteinfo);
+          if(deleteinfo["code"]==200){
+            alert("删除成功，请刷新查看");
+          }else{
+            alert("删除失败，请重试")
+          }
+        } catch (error) {
+        }
+        finally{
+          console.log("nebula",dataset.nebulaDataset.length);
+          console.log("janus",dataset.janasDataset.length);
+        }
+      }
+      deleteDataset(did);
+    }
+
+  const upl1 = ()=>{
+    $("#ufd").ajaxSubmit({
+        type: 'post',
+        xhrFields: {
+          withCredentials: true
+        },
+        url: 'xxxxxxxxxx',
+        success: function (result) {}
+ })
+  }
     
+    
+    const upFile=()=> {
+      console.log(file1.value)
+      var file = file1.value.files[0];
+      var file2 = file2.value.files[0];
+      console.log("file",file)
+      const req= {
+        "source":1,"description":"thousand","vertexProperty":"null","edgeProperty":"null","taskName":"addthousandDataset--nebula","janusIdFileName":"null"
+      }
+      var newreq =JSON.stringify(req);
+      const blob = new Blob([newreq], {
+          type: 'application/json',
+        });
+      var blobs=[]
+      blobs.push(blob);
+      var formdata = new FormData();
+      // 这里只是基本设置，对应接口需求设置响应的类型属性值
+          formdata.append('file', file);
+          formdata.append('file', file2);
+          //formdata.append('req','[{"source":1,"description":"thousand","vertexProperty":"null","edgeProperty":"null","taskName":"addthousandDataset--nebula","janusIdFileName":"null"}]')
+
+          formdata.append("req",blob);
+          console.log("formdata",formdata)
+          const uploadDataset=()=>{
+              try {
+                
+                var uploadinfo = axios.post('http://localhost:8199/dataset/addDataset1', formdata
+                //,{headers: {'Content-Type': 'multipart/form-data'}}
+                );
+                
+                console.log("uploadinfo",uploadinfo);
+                if(uploadinfo.data["code"]==200){
+                  alert("添加成功，请刷新查看");
+                }else{
+                  alert("添加失败，请重试")
+                }
+              } catch (error) {
+                console.log("error",error);
+              }
+              finally{
+                console.log("nebula",dataset.nebulaDataset.length);
+                console.log("janus",dataset.janasDataset.length);
+              }
+                }
+          uploadDataset();
+      
+
+    }
+
+
+    const uploadFile=(file, url) =>{
+      // 处理文件转换成formData格式
+      var formdata = new FormData();
+      // 这里只是基本设置，对应接口需求设置响应的类型属性值
+          formdata.append('file', file);
+          formdata.append('Status', 0);
+          formdata.append('req','[{"source":1,"description":"thousand","vertexProperty":"null","edgeProperty":"null","taskName":"addthousandDataset--nebula","janusIdFileName":"null"}]')
+      // 接口调用
+      let xml = new XMLHttpRequest();
+      xml.open('POST', url,true) // 第三个值指定接口是否异步
+      // 设置请求头信息
+      xml.setRequestHeader('token', token);
+      // 监控上传进度
+      //xml.upload.onprogress  = onprogressEvent()
+      // 接口调用成功回调
+      xml.onload = onloadEvent()
+      // 接口调用失败处理
+      xml.onerror = onerrorEvent()
+	}
+	const onprogressEvent=(e)=> {
+		if (e.lengthComputable) {
+			// 可以获取到实时的接口进度
+        	this.realTimePercent = +parseInt((e.loaded / e.total) * 100);
+      }
+	}
+	const onloadEvent=(e)=> {
+		// 获取到接口调用成功后的返回数据
+		const res = JSON.parse(e.currentTarget.response);
+	}
+	const onerrorEvent=(e)=> {
+		// 接口调用失败后的处理
+		
+	}
+
+
     /*
     <!-- const changegid = (val)=>{
       data.graphid=val;
@@ -503,10 +646,12 @@
       console.log(searchdata.datasetid);
     }
 
-    const deleteDataset=(id)=>{
-      searchdata.datasetid=id;
-      console.log(searchdata.datasetid);
+    const changeAdd=(int)=>{
+      data.ifadd = int;
+      console.log("ifadd",data.ifadd);
     }
+
+    
 
     const changeAll=(id)=>{
       changeheight();
@@ -570,7 +715,11 @@
   
     const doSearchAndShowmore = ()=>{
       doSearch();
-      showmore();
+      if(data.dontshowmore==true)
+      {
+        showmore();
+      }
+      
     }
 
 
@@ -730,6 +879,12 @@
           overflow: hidden;
           //border:1px solid black ;
         }
+        .addDataset{
+        position: absolute;
+        right:10px;
+        font-size: xx-large;
+        cursor: pointer;
+      }
       }
       .datasetli{
         
@@ -744,7 +899,7 @@
         }
         .delete{
         position: relative;
-        right:10px;
+        right:15px;
         float: right;
       }
       }
@@ -759,17 +914,18 @@
         width: 25%;
       }
       .lver{
-        width: 8%;
+        width: 12%;
       }
       .ledg{
-        width: 8%;
+        width: 12%;
       }
       .ltas{
         width: 15%;
       }
       .lfm{
-        width: 10%;
+        width: 13%;
       }
+      
       
       .datasetli:nth-child(odd){
         background-color: rgb(255, 177, 203);
@@ -823,6 +979,25 @@
             }      
         }
   
+  .addBar{
+    position: fixed;
+    width: 600px;
+    height: 400px;
+    top: 25%;
+    left: 50%;
+    margin-left: -300px;
+    background-color: aliceblue;
+    z-index: 20;
+  }
+  .closebtn{
+    position: absolute;
+    right: 0;
+    border: 0ch;
+    font-size: xx-large;
+    background: transparent;
+    cursor: pointer;
+  }
+
   </style> 
 
 
