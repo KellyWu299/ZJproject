@@ -37,8 +37,8 @@ public class IndexController {
         return CommonResult.success(map);
     }
     @GetMapping("/delectAll")
-    public CommonResult<String> delectAll(@RequestParam(value = "tableName",required = true)String tableName) throws IOException {
-        String time=preComputeService.delect(tableName);
+    public CommonResult<String> delectAll(@RequestParam(value = "id",required = true)Integer id) throws IOException {
+        String time=preComputeService.delect(id);
         return CommonResult.success(time);
     }
 }

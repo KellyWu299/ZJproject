@@ -174,9 +174,20 @@ public class PreComputeService extends ServiceImpl<IndexDao, index> {
         return null;
     }
 
-    public String delect(String tableName) {
+    public String delect(Integer Id) {
         long startTime=System.currentTimeMillis();
-        indexDao.delectAll(tableName);
+        Dataset dataset=indexDao.getFileId(Id);
+        int source=dataset.getSource();
+        String TableName=null;
+        if(source==2)
+        {
+            TableName="janus_"+Id;
+        }
+        else if (source==1)
+        {
+            TableName="nebula_"+Id;
+        }
+        indexDao.delectAll(TableName);
         long endTime = System.currentTimeMillis();
         return "删除所有数据用时"+(endTime-startTime);
     }
