@@ -152,11 +152,4 @@ public class NebulaGraphService {
         file.delete();
         return "delete successfully!";
     }
-
-
-
-
-
-
-
 }

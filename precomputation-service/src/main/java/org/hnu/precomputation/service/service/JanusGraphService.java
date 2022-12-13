@@ -272,9 +272,9 @@ public class JanusGraphService  {
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
             String s=null;
             while ((s = br.readLine()) != null) {
-                String[] str = s.split(",");
-                Integer a = Integer.parseInt(str[0]);
-                Integer b = Integer.parseInt(str[1]);
+                String[] str = s.split("\t");
+                int a = Integer.parseInt(str[0]);
+                int b = Integer.parseInt(str[1]);
                 //  Long id1 = (Long) g.E(s).inV().next().id();
                 //  Long id2 = (Long) g.E(s).outV().next().id();
                 Pair pair = new Pair();

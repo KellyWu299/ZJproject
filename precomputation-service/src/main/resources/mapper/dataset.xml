@@ -58,7 +58,7 @@
             </if>
         </trim>
     </insert>
-    <select id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <select id="deleteByPrimaryKey" parameterType="java.lang.Integer" resultType="java.lang.Integer">
         delete
         from dataset
         where id = #{id}

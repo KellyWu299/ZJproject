@@ -3,12 +3,43 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.hnu.precomputation.service.dao.IndexDao">
-    <insert id="InsertAllIndex" parameterType="java.util.List">
-        INSERT INTO index
-        (id, code, pos, dis)
-        VALUES
-        <foreach collection ="indexList" item="index" separator =",">
-            (#{index.id}, #{index.code}, #{index.pos}, #{index.dis})
-        </foreach >
-    </insert>
+    <update id="creatTable" parameterType="String">
+        CREATE TABLE ${table} (
+          `id` int NOT NULL,
+          `code` varchar(2555) NULL,
+          `dis` varchar(2555) NULL,
+          `pos` varchar(2555) NOT NULL,
+          PRIMARY KEY (`id`))
+  </update>
+
+    <delete id="delectAll">
+        delete from ${tableName}
+    </delete>
+
+    <select id="selectById" resultType="org.hnu.precomputation.common.model.dataset.index">
+        select id, code, dis, pos
+        from ${tableName}
+        where id = #{id}
+    </select>
+    <select id="selectByIdCode" resultType="org.hnu.precomputation.common.model.dataset.index">
+        select id, code, dis, pos
+        from ${tableName}
+        where code = #{code}
+    </select>
+    <select id="existTable" parameterType="String" resultType="java.lang.Integer">
+        select count(*)
+        from information_schema.TABLES
+        where table_name = #{tableName}
+    </select>
+
+    <select id="getJanusFileName" parameterType="String" resultType="java.lang.String">
+        select janusIdFileName
+        from dataset
+        where name = #{name} and source = "2"
+    </select>
+    <select id="getFileId" resultType="org.hnu.precomputation.common.model.dataset.Dataset">
+        select *
+        from dataset
+        where id = #{id}
+    </select>
 </mapper>

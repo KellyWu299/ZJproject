@@ -2,8 +2,7 @@ package org.hnu.precomputation.service.graphAlgo.preCompute;
 
 import org.hnu.precomputation.service.Impl.Pair;
 
-
-import java.io.*;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -133,10 +132,10 @@ public class TreeDecomposition_When {
             }
         }
         enCodeTree(root);
-        WriteCodeTree();
+//        WriteCodeTree();
     }
 
-    //给树编码，用于快速定位两个节点的公共祖先                     ？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？有错误
+    //给树编码，用于快速定位两个节点的公共祖先
     private void enCodeTree(TreeNode root){
         LinkedList<ArrayList<TreeNode>> queue = new LinkedList<>();
         queue.add(root.child);
@@ -152,16 +151,6 @@ public class TreeDecomposition_When {
                 queue.add(c.child);
             }
         }
-    }
-
-    private void WriteCodeTree() throws IOException {
-        FileOutputStream file = new FileOutputStream(FilePath.CodeMap);
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(file));
-        for (Object a : encode_Map.keySet()) {
-            bw.write(a + " " + encode_Map.get(a) + "\n");
-        }
-        bw.flush();
-        bw.close();
     }
 
     //更新 度

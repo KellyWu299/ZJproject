@@ -2,7 +2,6 @@ package org.hnu.precomputation.service.graphAlgo.preCompute;
 
 import org.hnu.precomputation.service.Impl.Pair;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,7 +17,6 @@ public class H2H_Index {
         TreeDecomposition_When tree = new TreeDecomposition_When(graph);
         root = tree.root;//对该root的修改不会影响TEN_Index中的root
         node_map = tree.node_map;
-
 //        encode_map = tree.encode_map;
         LinkedList<TreeNode> q = new LinkedList<>();
         //计算每个节点的anc数组
@@ -113,21 +111,5 @@ public class H2H_Index {
             ArrayList<TreeNode> childs = Xv.child;
             q.addAll(childs);
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        long startTime=System.currentTimeMillis();
-
-
-        H2H_Index h2H_index=new H2H_Index();
-        String Path=FilePath.TxtPath;
-        File file=new File(Path);
-        file.createNewFile();
-        OperateTxt.WriteIndex(Path,h2H_index);
-
-
-        long endTime=System.currentTimeMillis();
-        System.out.println("running time:"+Long.toString(endTime- startTime).substring(0, Long.toString(endTime-startTime).length()-3)+"s");
-
     }
 }
