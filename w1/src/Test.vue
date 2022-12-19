@@ -1,6 +1,5 @@
 <script setup>
-import OneSon from "@/components/son1.vue";
-import AnotherSon from "@/components/son2.vue";
+
 import TB2 from "@/components/TopBar2.vue"
 import G2 from "@/components/Graph2.vue"
 import SideBar from "@/components/SideBar.vue"

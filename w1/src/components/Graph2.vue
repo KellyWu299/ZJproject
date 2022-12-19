@@ -13,6 +13,17 @@
     <!-- <p v-if="data.pointid">{{CenterNodes.center[data.pointid]}}</p> -->
 
     <div class="showcenter">
+
+      <div class="time">
+        <h3 @click="checkindex" class="pointer">最短路径查询</h3>
+        <input type="text" v-model="Index.v"> 
+        
+        <input type="text" v-model="Index.e">
+        <br>
+        <br>
+        <li>优化前 : {{CenterNodes.badtime}}ms</li>
+        <li>优化后 : {{CenterNodes.goodtime}}ms</li>
+      </div>
       <h3>顶点中心性查询</h3>
       <div class="datasetli" v-for="(item) in CenterNodes.center" :key="item.index">
         <li>顶点id:{{item.node}}</li>
@@ -80,13 +91,56 @@ import axios from 'axios';
   };
   defineExpose({ ReceiveGraphid });
   var i =1;
-  
+  var port = "8199";
+    var ip1 = "localhost";
+    var ip0 = "192.168.70.184";
   const CenterNodes = reactive({
       node:[],
       center:[],
       janasDataset:[],
-      nebulaDataset:[]
+      nebulaDataset:[],
+      badtime:0,
+      goodtime:0,
   })
+
+  const Index = reactive({
+      v:0,
+      e:0
+  })
+
+
+  const checkindex = () =>{
+        var indexinfo = "";    
+      async function getData1 () {
+        var indexweb0 = "http://192.168.70.184:8199/algo/getSingleIndex?v1=271&v2=456&id=503"
+        var indexweb2 = "http://192.168.70.184:8199/dataset/selectDataset"
+        var indexweb ='http://'+ip0+':'+port+'/algo/getSingleIndex?v1='+Index.v+'&v2='+Index.e+'&id='+data.tableid;
+        try {
+          console.log("tableid:",data.tableid)
+          indexinfo = (await axios.get(indexweb)).data.data["6.0"]
+          console.log("indexinfo",indexinfo)
+          CenterNodes.goodtime = indexinfo[0]
+          CenterNodes.badtime = indexinfo[1]
+          
+        } catch (error) {
+          
+        }
+        finally{
+          
+        }
+      }
+      getData1()
+    }
+    // checkindex();
+
+
+  //   watch(Index,
+  // (curr, old) => {
+  //   checkindex();
+  // }
+  // )
+
+
   const unique = (arr)=>{
     
     console.log("unique")
@@ -111,8 +165,8 @@ import axios from 'axios';
     var datasetinfo = "";
     
     var port = "8199";
-    var ip0 = "localhost";
-    var ip1 = "192.168.70.184";
+    var ip1 = "localhost";
+    var ip0 = "192.168.70.184";
   async function getData () {
     var selectDataset = "http://"+ip0+":"+port+"/dataset/selectDataset";
     var JanusWeb = 'http://'+ip0+':'+port+'/algo/queryDatasetById?id=';
@@ -121,15 +175,15 @@ import axios from 'axios';
     var centerweb = 'http://'+ip0+':'+port+'/algo/computeEgoById?id='
     try {
       
-      datasetinfo = (await axios.get("http://"+ip0+":"+port+"/dataset/selectDataset")).data
-      console.log("datasetinfo",datasetinfo)
-      for(let i in datasetinfo)
-      if(datasetinfo[i]["sourse"] == 2){
-        web=JanusWeb;
-      }
-      else{
-        web=NebulaWeb
-      }
+      // datasetinfo = (await axios.get("http://"+ip0+":"+port+"/dataset/selectDataset")).data
+      // console.log("datasetinfo",datasetinfo)
+      // for(let i in datasetinfo)
+      // if(datasetinfo[i]["sourse"] == 2){
+      //   web=JanusWeb;
+      // }
+      // else{
+      //   web=NebulaWeb
+      // }
       tableData = (await axios.get(web+data.tableid)).data
       // tableData = (await axios.get('http://localhost:8200/algo/queryDatasetById?id=383')).data
       console.log("success",tableData.data)
@@ -156,11 +210,13 @@ import axios from 'axios';
   
 }
   ajaxcreated();
+  
   watch(ifchanged,
   (curr, old) => {
     ajaxcreated();
   }
   )
+
   const draw = () => {
           // getData();
           CenterNodes.center=[];
@@ -259,6 +315,9 @@ import axios from 'axios';
 // )
 </script>
 <style lang="less" >
+.pointer{
+	cursor: pointer;
+}
 #graphScreen{
   // background-color: rgb(255, 210, 210);
   margin: 0;
@@ -306,12 +365,18 @@ import axios from 'axios';
     }  
 
     .datasetli:nth-child(odd){
-        background-color: rgb(255, 177, 203);
+        background-color: rgb(246,222,212);
       }
 
     .datasetli:nth-child(even){
-        background-color: rgb(177, 191, 255);
+        background-color: rgb(226,175,144);
       }
+    .time{
+      input{
+        width: 30%;
+      }
+
+    }
   }
 }
 #GS{

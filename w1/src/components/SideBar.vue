@@ -19,7 +19,9 @@
             <p>2、触碰相应数据集可以获得详情，点击相关数据集，进入查询模式</p>
             <p>3、进入查询模式后，在输入框输入相应点id，点击go查询，点击draw渲染网络图</p>
             <p>4、点击数据集上方nebula\janus graph可进入数据集操作界面</p>
-            <p>5、点击history获取历史查询数据</p>
+            <p>5、点击删除可删除数据集，点击右上角加号可添加数据集</p>
+            <p>6、点击history获取历史查询数据</p>
+            <p>7、选择数据集后，请务必点击Go载入数据集后再进行相关查询，包括最短路径查询时</p>
           </div>
           <div id="tools" class="tanchuang" v-if="data.showtools">设置
           </div>
@@ -52,7 +54,7 @@
           </div>
           <div class="lifather" v-if="data.janusid">
             <p @click="showmore">Janus Dataset</p>
-            <li class="datasetli" @click="changeheight" v-for="(item,index) in dataset.janasDataset" :key="index">
+            <li class="datasetli" @click="changeDatasetId(item.id)" v-for="(item,index) in dataset.janasDataset" :key="index" >
               <li>id : {{item.id}}</li>
               <li>name : {{item.name}}</li>
               <li>description : {{item.description}}</li>
@@ -126,10 +128,9 @@
         <div class="addBar" v-if="data.ifadd">
           <button class="closebtn" @click="changeAdd(false)">X</button>
           <!-- <form id="ufd" action="" > -->
-            <input  ref="file1" type="file" name=""   placeholder="点击上传文件"/>
-            <input  ref="file2" type="file" name=""   placeholder="点击上传文件"/>
-            <input type="text">
-            <button @click="upFile">tmd提交</button>
+            <input class="upfile" ref="file1" type="file" name="111"   placeholder="点击上传文件1"/>
+            <input class="req" type="text" placeholder="req参数" v-model="UPFILE.req">
+            <button class="change3 searchbtn submitbtn" @click="upFile">提交</button>
           <!-- </form> -->
           
         </div>
@@ -162,7 +163,7 @@ import { type } from "os";
       dontshowmore:false,
       ifadd:false
     })
-
+ 
     const dataset = reactive({
       janasDataset:[{
             "id": 422,
@@ -415,9 +416,13 @@ import { type } from "os";
       pointid:""
     })
     
+    const UPFILE = reactive({
+      req:""
+    })
+
     var port = "8199";
-    var ip0 = "localhost";
-    var ip1 = "192.168.70.184";
+    var ip1 = "localhost";
+    var ip0 = "192.168.70.184";
     const  file1 = ref(null);
     const  file2 = ref(null);
     const ajaxcreated = () =>{
@@ -451,6 +456,10 @@ import { type } from "os";
       getData()
     }
   ajaxcreated();
+
+
+
+  
 
 
     const ajaxdelete =(did)=>{
@@ -491,39 +500,42 @@ import { type } from "os";
     const upFile=()=> {
       console.log(file1.value)
       var file = file1.value.files[0];
-      var file2 = file2.value.files[0];
+      //var file22 = file2.value.files[0];
       console.log("file",file)
       const req= {
         "source":1,"description":"thousand","vertexProperty":"null","edgeProperty":"null","taskName":"addthousandDataset--nebula","janusIdFileName":"null"
       }
-      var newreq =JSON.stringify(req);
+      //var newreq =JSON.stringify(req);
+      var newreq = UPFILE.req;
       const blob = new Blob([newreq], {
           type: 'application/json',
         });
-      var blobs=[]
+      var blobs=new Array();
       blobs.push(blob);
+      //blobs.push(blob);
       var formdata = new FormData();
       // 这里只是基本设置，对应接口需求设置响应的类型属性值
           formdata.append('file', file);
-          formdata.append('file', file2);
-          //formdata.append('req','[{"source":1,"description":"thousand","vertexProperty":"null","edgeProperty":"null","taskName":"addthousandDataset--nebula","janusIdFileName":"null"}]')
+          //formdata.append('file', file22);
+          //formdata.append('req','{"source":1,"description":"thousand","vertexProperty":"null","edgeProperty":"null","taskName":"addthousandDataset--nebula","janusIdFileName":"null"}')
 
           formdata.append("req",blob);
           console.log("formdata",formdata)
           const uploadDataset=()=>{
               try {
                 
-                var uploadinfo = axios.post('http://localhost:8199/dataset/addDataset1', formdata
-                //,{headers: {'Content-Type': 'multipart/form-data'}}
+                var uploadinfo = axios.post('http://'+ip0+':'+port+'/dataset/addDataset', formdata
+                ,{headers: {'Content-Type': 'multipart/form-data'}}
                 );
                 
                 console.log("uploadinfo",uploadinfo);
-                if(uploadinfo.data["code"]==200){
+                
                   alert("添加成功，请刷新查看");
-                }else{
-                  alert("添加失败，请重试")
-                }
+                
+                  
+                
               } catch (error) {
+                alert("添加失败，请重试")
                 console.log("error",error);
               }
               finally{
@@ -834,11 +846,11 @@ import { type } from "os";
         height: 150px;
       }
       .datasetli:nth-child(odd){
-        background-color: rgb(255, 177, 203);
+        background-color: rgb(246,222,212);
       }
 
       .datasetli:nth-child(even){
-        background-color: rgb(177, 191, 255);
+        background-color: rgb(226,175,144);
       }
     }
 
@@ -928,11 +940,11 @@ import { type } from "os";
       
       
       .datasetli:nth-child(odd){
-        background-color: rgb(255, 177, 203);
+        background-color: rgb(246,222,212);
       }
 
       .datasetli:nth-child(even){
-        background-color: rgb(177, 191, 255);
+        background-color: rgb(226,175,144);
       }
     }
 
@@ -988,6 +1000,31 @@ import { type } from "os";
     margin-left: -300px;
     background-color: aliceblue;
     z-index: 20;
+    input{
+      //display: block;
+      width:200px;
+      position: absolute;
+      left: 50%;
+      margin-left: -100px;
+    }
+
+    .upfile{
+      top: 10%;
+    }
+    .req{
+      top:20%;
+      width: 40%;
+      height: 10%;
+    }
+
+    .submitbtn{
+      width:100px;
+      position: absolute;
+      left: 50%;
+      margin-left: -50px;
+      top:70%
+    }
+    
   }
   .closebtn{
     position: absolute;
@@ -996,6 +1033,10 @@ import { type } from "os";
     font-size: xx-large;
     background: transparent;
     cursor: pointer;
+
+
+    
+
   }
 
   </style> 

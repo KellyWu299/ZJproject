@@ -1,37 +1,22 @@
 <template>
-
-  <TopBar></TopBar>
-  <Sidebar></Sidebar>
-  <!-- <Left></Left> -->
-  <Graphs></Graphs>
+  <TB2></TB2>
+  <SideBar @sendgid="Sendgid"></SideBar>
+  <G2 ref="searchToGraph"></G2>
 </template>
 
-<script>
-import Graphs from './components/Graph.vue'
-// import Left from './components/Left.vue'
-import Sidebar from './components/SideBar.vue'
-import TopBar from './components/TopBar.vue'
+<script setup>
 
-export default {
-  name: 'App',
-  components: {
-    Graphs,
-    // Left,
-    Sidebar,
-    TopBar
-  },
-  data(){
-    return{
-      sides:[
-        {v1:1,v2:3},
-        {v1:10,v2:31},
-        {v1:12,v2:213},
-        {v1:165,v2:32},
-        
-      ]
-    }
-  }
-}
+import TB2 from "@/components/TopBar2.vue"
+import G2 from "@/components/Graph2.vue"
+import SideBar from "@/components/SideBar.vue"
+import { ref } from "vue";
+ 
+
+const searchToGraph = ref(null);
+
+const Sendgid = (val) => {
+  searchToGraph.value.ReceiveGraphid(val);
+};
 </script>
 
 <style lang="less">
@@ -143,5 +128,9 @@ li{
 
 .v-move {
     transition: 2s;
+}
+
+.pointer{
+	cursor: pointer;
 }
 </style>

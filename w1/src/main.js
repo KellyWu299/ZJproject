@@ -4,4 +4,4 @@ import Vue from 'vue'
 import Test from './Test.vue'
 
 
-createApp(Test).mount('#app')
+createApp(App).mount('#app')
